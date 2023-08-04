@@ -1,11 +1,9 @@
-from classic import Strategy
 from threading import Thread
 from pyngrok import ngrok
 from modules.config import read_API
 from modules.telegram import Telegram
 
 
-strat = Strategy()
 tele = Telegram()
 
 

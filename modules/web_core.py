@@ -5,7 +5,7 @@ from modules.config import *
 from modules.db import DealsDataBase
 from modules.market_connector import okxTrade
 import threading
-from classic import Strategy
+from arch.classic import Strategy
 
 class WebCore:
     def __init__(self, strat_name = 'classic'):
