@@ -28,12 +28,12 @@ col1, col2, col3 = st.columns(3)
 
 
 balance_amount, profit_percent = web_core.balance(strat_name)
-deals_number, profit_deals_number = web_core.number_of_deals()
+deals_number, profit_deals_percent = web_core.number_of_deals()
 total_fee = web_core.get_total_fees()
 
 
 col1.metric('Balance', f'{balance_amount} $', f'{profit_percent} %')
-col2.metric('Deals', deals_number, f'{profit_deals_number} %')
+col2.metric('Deals', deals_number, f'{profit_deals_percent} %')
 col3.metric('Fee`s', f'{total_fee} $')
 
 st.subheader('Список сделок')

@@ -55,13 +55,13 @@ class WebCore:
     def number_of_deals(self, strat_name=None):
         if strat_name == None:
             strat_name = self.strat_name
-        deals_number, profit_deals_number = 0, 0
+        deals_number, profit_deals_percent = 0, 0
         deals = self.deals_db.read_deals(strat_name)
         deals_number += len(deals)
-        profit_deals_number += self.metric.total_percent_of_success(strat_name) or 0
-        if profit_deals_number < 50:
-            profit_deals_number = -profit_deals_number
-        return deals_number, profit_deals_number 
+        profit_deals_percent += self.metric.total_percent_of_success(strat_name) or 0
+        if profit_deals_percent < 50:
+            profit_deals_percent = -profit_deals_percent
+        return deals_number, round(profit_deals_percent, 2)
 
 
     @logging
