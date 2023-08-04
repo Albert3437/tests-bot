@@ -65,7 +65,7 @@ with col2.form("add_form"):
     strat = read_some_strat(strat_name)
     name = st.text_input("Название", value=strat['name'])
     indicator_list = st.multiselect('Выберите индикаторы',all_indicator_list, default=strat['indicator_list'])
-    arch_list = ["classic", "extended"]
+    arch_list = ["classic", "classic reverse"]
     arch = st.selectbox("Архитектура", arch_list, index=arch_list.index(strat['arch']))
     strat_type_list = ["classic", "all signals"]
     strat_type = st.selectbox("Тип стратегии", strat_type_list, help="classic это закрытие сделок при смене тренда, all signal это закрытие сделок по всем сигналам", index=strat_type_list.index(strat['strat_type']))
