@@ -2,10 +2,11 @@ from threading import Thread
 from pyngrok import ngrok
 from modules.config import read_API
 from modules.telegram import Telegram
+from modules.config import init_settings
 
 
 tele = Telegram()
-
+init_settings()
 
 def grok():
     # Запуск ngrok для работы веб сервера на открытом порте(Ссылка оправляется в телеграмм)
