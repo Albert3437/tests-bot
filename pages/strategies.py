@@ -80,6 +80,6 @@ with col2.form("add_form"):
     if st.form_submit_button("Изменить"):
         try:
             change_strat(strat_name=strat_name, name=name, indicator_list=indicator_list, demo_mode=demo_mode, status='on', arch=arch, strat_type=strat_type, balance=balance_, interaval=interval, token=token, stop_loss=stop_loss, take_profit=take_profit)
-            st.success("Стратегия успешно добавлена", icon="✅")
+            st.success("Стратегия успешно измененна", icon="✅")
         except Exception:
-            st.error("Ошибка при добавлении стратегии", icon="❌")
+            st.error("Ошибка при изменении стратегии", icon="❌")
