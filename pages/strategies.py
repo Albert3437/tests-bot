@@ -20,7 +20,11 @@ def strategy_list():
 strat_name = st.selectbox(
     'Выберите стратегию',
     strategy_list())
-
+strat = read_some_strat(strat_name)
+if strat['name'] == 'on':
+    st.success('Запущен')
+else:
+    st.error('Выключен')
 
 web_core = WebCore(strat_name)
 
@@ -62,7 +66,7 @@ col2.subheader("Изменение стратегии")
 
 with col2.form("add_form"):
 # НАСТРОИТЬ ОТОБРАЖЕНИЕ ВСЕХ СТАРТОВЫХ ПОЗИЦИЙ
-    strat = read_some_strat(strat_name)
+    
     name = st.text_input("Название", value=strat['name'])
     indicator_list = st.multiselect('Выберите индикаторы',all_indicator_list, default=strat['indicator_list'])
     arch_list = ["classic", "classic reverse"]
