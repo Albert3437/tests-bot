@@ -1,6 +1,6 @@
 import streamlit as st
 from modules.config import add_new_strat
-
+from modules.db import DealsDataBase
 
 st.set_page_config(layout='centered')
 
@@ -25,6 +25,7 @@ with st.form("add_form"):
 
     if st.form_submit_button("Добавить"):
         try:
+            db = DealsDataBase(name)
             add_new_strat(name=name, indicator_list=indicator_list, demo_mode=demo_mode, status='off', arch=arch, strat_type=strat_type, balance=balance, interval=interval, token=token, stop_loss=stop_loss, take_profit=take_profit)
             st.success("Стратегия успешно добавлена")
         except Exception:
