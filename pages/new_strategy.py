@@ -15,7 +15,7 @@ with st.form("add_form"):
         'Выберите индикаторы',
         all_indicator_list)
     arch = st.selectbox("Архитектура", ["classic", "classic reverse"])
-    strat_type = st.selectbox("Тип стратегии", ["classic", "all signal"], help="classic это закрытие сделок при смене тренда, all signal это закрытие сделок по всем сигналам")
+    strat_type = st.selectbox("Тип стратегии", ["classic", "all signals"], help="classic это закрытие сделок при смене тренда, all signal это закрытие сделок по всем сигналам")
     stop_loss = st.number_input("Стоп лосс", help='0.98 это 2% для стоп лосса, если не нужен тогда не надо указывать')
     take_profit = st.number_input("Тейк профит", help='1.02 это 2% для тейк профита, если не нужен тогда не надо указывать')
     balance = st.number_input("Стартовый баланс")
