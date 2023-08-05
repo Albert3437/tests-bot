@@ -112,6 +112,10 @@ class WebCore:
     def remove_strategy(self, strat_name = None):
         if strat_name == None:
             strat_name = self.strat_name
+        strat = read_some_strat(strat_name)
+        if strat['status'] == 'on' and strat['name'] == strat_name:
+            change_strat(strat_name, status = 'off')
+            self.stop_strategy()
         remove_strat(strat_name)
         return 'Стратегия удалена'
 

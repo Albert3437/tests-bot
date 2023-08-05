@@ -49,7 +49,7 @@ def save_dump(filename, data):
 
 
 @logging
-def add_new_strat(name:str, indicator_list:list, interaval:str, arch:str, strat_type:str, balance:int, token:str, demo_mode:bool=True, status:int=None, *, leverage:int=1, stop_loss:float=None, take_profit:float=None):
+def add_new_strat(name:str, indicator_list:list, interval:str, arch:str, strat_type:str, balance:int, token:str, demo_mode:bool=True, status:int=None, *, leverage:int=1, stop_loss:float=None, take_profit:float=None):
     strats = read_strategies()
     strats.append({
             "name":name,
@@ -62,7 +62,7 @@ def add_new_strat(name:str, indicator_list:list, interaval:str, arch:str, strat_
             "stop_loss":stop_loss,
             "take_profit":take_profit,
             "balance":balance,
-            "interval":interaval,
+            "interval":interval,
             "token":token
             })
     save_dump('configs/strategies.json', strats)
