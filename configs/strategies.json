@@ -1,1 +1,1 @@
-[{"name": "classic", "indicator_list": ["ADX", "Bollinger", "CCI"], "demo_mode": true, "status": "on", "arch": "classic", "strat_type": "all signals", "leverage": 1, "stop_loss": 0, "take_profit": 0, "balance": 100.0, "interval": "5m", "token": "ADA"}]
+[]

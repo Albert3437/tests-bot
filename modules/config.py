@@ -1,9 +1,18 @@
 import json
-from modules.logger import logging
 from modules.metrics import *
 
 
+
 @logging
+def init_settings():
+    try:
+        with open('configs/strategies.json', 'r') as f:
+            json.load(f)
+    except Exception:
+            with open('configs/strategies.json', 'w') as f:
+                json.dump([],f)
+
+
 def read(filepath):
     with open(filepath, 'r') as f:
         file = json.load(f)
@@ -30,15 +39,6 @@ def read_some_strat(strat_name):
 @logging
 def read_API():
     return read('configs/API.json')
-
-
-@logging
-def init_settings():
-    try:
-        read_strategies()
-    except Exception:
-        with open('configs/strategies.json', 'w') as f:
-            json.dump([],f)
 
 
 @logging
