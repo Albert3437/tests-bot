@@ -21,7 +21,7 @@ strat_name = st.selectbox(
     'Выберите стратегию',
     strategy_list())
 strat = read_some_strat(strat_name)
-if strat['name'] == 'on':
+if strat['status'] == 'on':
     st.success('Запущен')
 else:
     st.error('Выключен')
