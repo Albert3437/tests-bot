@@ -1,0 +1,10 @@
+pandas
+python-binance
+telebot
+Ta-Lib
+python-okx
+schedule
+pyngrok
+loguru
+pymysql
+streamlit
