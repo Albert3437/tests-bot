@@ -1,5 +1,4 @@
 from modules.market_connector import okxTrade
-from modules.kline_collector import BinanceData
 from modules.db import *
 from pandas import DataFrame
 from modules.logger import logging, logger
@@ -39,17 +38,17 @@ class TradingEngine:
 
 
     @logging
-    def close_deal(self, df, side):
+    def close_deal(self, df):
         strat = read_some_strat(self.strat_name)
-        token = strat['token']
-        balance = strat = strat['balance']
+        token, balance = strat['token'], strat['balance']
         close_result = (self.trade.close_position(token, 'long')['data'], self.trade.close_position(token, 'short')['data'])
         last_deal = self.deals_db.read_deals()[-1]
         actual_price = self.trade.actual_price(token)
+        side, open_price = last_deal[3], last_deal[2]
         if side == 'long':
-            percent = actual_price/last_deal[2]
+            percent = actual_price/open_price
         if side == 'short':
-            percent = last_deal[2]/actual_price
+            percent = open_price/actual_price
         self.deals_db.close_deal(int(df['timestamp'].iloc[-1]), actual_price, percent, self.metric.get_fee(token))
         change_strat(self.strat_name, balance = balance*percent)
         logger.info(close_result)
@@ -63,7 +62,7 @@ class TradingEngine:
         strat_type = strat['strat_type']
         if len(deals) == 0 or deals[-1][3] != side or strat_type == 'all signals':
             if len(deals) != 0 and deals[-1][-1] == None:
-                self.close_deal(df, side)
+                self.close_deal(df)
             deal_result = self.trade.long(token, self.summ()) if side == 'long' else self.trade.short(token, self.summ())
             self.deals_db.open_deal(int(df['timestamp'].iloc[-1]), self.trade.actual_price(token), side)
             logger.info(deal_result)
