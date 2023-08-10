@@ -4,6 +4,7 @@ test.ipynb
 configs/API.json
 absolut.db
 debug.log
+configs/strategies.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
