@@ -14,5 +14,6 @@ def logging(func):
             return_value = func(*args, **kwargs)
             return return_value
         except Exception as e:
-            logger.error(e)
+            function_name = func.__name__
+            logger.error((function_name, e))
     return wrapper

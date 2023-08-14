@@ -2,7 +2,6 @@ from modules.market_connector import okxTrade
 from modules.db import *
 from pandas import DataFrame
 from modules.logger import logging, logger
-from modules.metrics import Metrics
 import time
 from modules.config import *
 # надо розобраться с ошибкой при закрытии позиций
@@ -14,7 +13,6 @@ from modules.config import *
 class TradingEngine:
     def __init__(self, strat_name, flag = '1'):
         self.strat_name = strat_name
-        self.metric = Metrics()
         self.trade = okxTrade(flag)
         self.deals_db = DealsDataBase(strat_name)
         
