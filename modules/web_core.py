@@ -166,8 +166,9 @@ class WebCore:
 
     def deals_df(self) -> pd.DataFrame:
         deals = self.deals_db.read_deals(self.strat_name)
-        df = pd.DataFrame(data = deals, columns=['id', 'open timestamp', 'open price', 'deal type', 'close timestamp', 'close price', 'percent', 'commision'])
+        df = pd.DataFrame(data = deals)
         return df
+
 
     @logging
     def logger_data(self) -> pd.DataFrame:

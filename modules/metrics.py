@@ -30,7 +30,9 @@ class Metrics:
         deals = self.deals_db.read_deals()
         profit_percent = 0
         for deal in deals:
-            profit_percent += (deal[-2] or 1) - 1
+            percent = deal['percent']
+            if percent != 0:
+                profit_percent += (percent or 1) - 1
         return round((profit_percent * 100), 2)
 
 
@@ -43,10 +45,14 @@ class Metrics:
             deal_len = 1
         success = deal_len
         for deal in deals:
-            profit_percent = deal[-2]
-            if profit_percent != None:
-                if profit_percent < 1:
-                    success -= 1
+            profit_percent = deal['percent']
+            if profit_percent == None:
+                deal_len -= 1
+                success -= 1
+            elif profit_percent < 1:
+                success -= 1
+                if profit_percent == 0:
+                    deal_len -= 1
         return success / deal_len * 100
 
 
@@ -69,5 +75,5 @@ class Metrics:
         fee = 0
         deals = self.deals_db.read_deals(db_name)
         for deal in deals:
-            fee+=deal[-1] or 0
+            fee+=deal['commision'] or 0
         return fee

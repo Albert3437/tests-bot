@@ -5,7 +5,9 @@ from modules.logger import logging, logger
 from modules.metrics import Metrics
 import time
 from modules.config import *
-
+# надо розобраться с ошибкой при закрытии позиций
+# Сделать правильное указание цены
+# Сделать проверку на закрытую сделку
 
 
 
@@ -38,18 +40,60 @@ class TradingEngine:
 
 
     @logging
-    def close_deal(self, df):
+    def wait_time(self):
+        strat = read_some_strat(self.strat_name)
+        interval = strat['interval']
+        intervals = {'1m':60, '5m':300, '15m':900, '30m':1800, '1h':3600, '2h':7200, '4h':14400, '6h':21600, '12h':43200}
+        return int(intervals[interval] * 0.6)
+
+
+    @logging
+    def close_data(self):
+        r = self.trade.position_list_history()['data'][0]
+        percent = 1 + float(r['pnlRatio'])
+        close_price = float(r['closeAvgPx'])
+        open_price = float(r['openAvgPx'])
+        fee = float(r['closeTotalPos']) * float(r['closeAvgPx']) * 0.0005
+        return percent, close_price, open_price, fee
+
+
+    @logging
+    def create_order(self, price, token, side, act_type = 'open'):
+        trade = okxTrade()
+        if act_type == 'close':
+            deal_result = self.trade.long(token, self.summ(), price, side='sell') if side == 'long' else self.trade.short(token, self.summ(), price, side='buy')
+        else:
+            deal_result = self.trade.long(token, self.summ(), price) if side == 'long' else self.trade.short(token, self.summ(), price)
+        if deal_result['data'][0]['sMsg'] == 'Order placed':
+            order_id = deal_result['data'][0]['ordId']
+            for _ in range(self.wait_time()):
+                status = trade.last_order('ADA', order_id)['data'][0]['state']
+                if status == 'filled':
+                    return deal_result, status
+                time.sleep(1)
+            else:
+                if act_type == 'close':
+                    #trade.cancel_order(token, order_id) вроду бы работает без этого
+                    deal_result = self.trade.long(token, self.summ(), '', side='sell', ordType='market') if side == 'long' else self.trade.short(token, self.summ(), '', side='buy', ordType='market')
+                else:
+                    trade.cancel_order(token, order_id)
+                status = trade.last_order('ADA', order_id)['data'][0]['state']
+                return deal_result, status
+
+
+    @logging
+    def close_deal(self, df, side):
         strat = read_some_strat(self.strat_name)
         token, balance = strat['token'], strat['balance']
-        close_result = (self.trade.close_position(token, 'long')['data'], self.trade.close_position(token, 'short')['data'])
+        price, timestamp = float(df['close'].iloc[-2]), int(df['timestamp'].iloc[-1])
+        close_result = self.create_order(price, token, side, 'close')
         last_deal = self.deals_db.read_deals()[-1]
-        actual_price = self.trade.actual_price(token)
-        side, open_price = last_deal[3], last_deal[2]
-        if side == 'long':
-            percent = actual_price/open_price
-        if side == 'short':
-            percent = open_price/actual_price
-        self.deals_db.close_deal(int(df['timestamp'].iloc[-1]), actual_price, percent, self.metric.get_fee(token))
+        side, status = last_deal['deal_type'], last_deal['status']
+        if status == 'canceled':
+            self.deals_db.close_deal()
+        else:
+            percent, close_price, _, fee = self.close_data()
+            self.deals_db.close_deal(timestamp, close_price, percent, fee)
         change_strat(self.strat_name, balance = balance*percent)
         logger.info(close_result)
         return close_result
@@ -58,13 +102,15 @@ class TradingEngine:
     def open_deal(self, df:DataFrame, side:str):
         deals = self.deals_db.read_deals()
         strat = read_some_strat(self.strat_name)
-        token = strat['token']
-        strat_type = strat['strat_type']
-        if len(deals) == 0 or deals[-1][3] != side or strat_type == 'all signals':
-            if len(deals) != 0 and deals[-1][-1] == None:
-                self.close_deal(df)
-            deal_result = self.trade.long(token, self.summ()) if side == 'long' else self.trade.short(token, self.summ())
-            self.deals_db.open_deal(int(df['timestamp'].iloc[-1]), self.trade.actual_price(token), side)
+        token, strat_type = strat['token'], strat['strat_type']
+        price, timestamp = float(df['close'].iloc[-2]), int(df['timestamp'].iloc[-1])
+        if len(deals) == 0 or deals[-1]['deal_type'] != side or strat_type == 'all signals':
+            if len(deals) != 0 and deals[-1]['commision'] == None:
+                self.close_deal(df, side)
+            deal_result, status = self.create_order(price, token, side)
+            order_id = deal_result['data'][0]['ordId']
+            _, _, open_price, _ = self.close_data()
+            self.deals_db.open_deal(order_id, timestamp, open_price, side, status)
             logger.info(deal_result)
             return deal_result
 

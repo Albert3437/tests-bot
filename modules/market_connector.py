@@ -20,6 +20,12 @@ class okxTrade:
 
 
     @logging
+    def cancel_order(self, token, ordId):
+        result = self.tradeAPI.cancel_order(instId=f'{token}-USDT-SWAP', ordId=ordId)
+        return result
+
+
+    @logging
     def balance(self, token:str):
         # Получение баланса
         for _ in range(5):
@@ -36,16 +42,17 @@ class okxTrade:
     
 
     @logging
-    def long(self, token, amount):
+    def long(self, token, amount, price, side="buy", ordType='limit'):
         # Открытие лонговой сделки по маркет цене
         for _ in range(5):
             try:
                 result = self.tradeAPI.place_order(
                     instId=f"{token}-USDT-SWAP",
                     tdMode="cross",
-                    side="buy",
+                    side=side,
                     posSide="long",
-                    ordType="market",
+                    ordType=ordType,
+                    px=price,
                     sz=amount # 1 == 0.001 BTC , i dont know why it is so
                 )
                 return result
@@ -55,16 +62,17 @@ class okxTrade:
 
 
     @logging
-    def short(self, token, amount):
+    def short(self, token, amount, price, side="sell", ordType='limit'):
         # Открытие шортовой сделки по маркет цене
         for _ in range(5):
             try:
                 result = self.tradeAPI.place_order(
                     instId=f"{token}-USDT-SWAP",
                     tdMode="cross",
-                    side="sell",
+                    side=side,
                     posSide="short",
-                    ordType="market",
+                    ordType=ordType,
+                    px=price,
                     sz=amount # 1 == 0.001 BTC , i dont know why it is so
                 )
                 return result
@@ -103,9 +111,12 @@ class okxTrade:
     @logging
     def position_list_history(self):
         # История по позициям
-        r = self.accountAPI.get_positions_history()
-        print(r)
-
+        for _ in range(5):
+            try:
+                return self.accountAPI.get_positions_history()
+            except:
+                time.sleep
+        return 'failure'
 
     @logging
     def order_history(self):
@@ -113,6 +124,18 @@ class okxTrade:
         for _ in range(5):
             try:
                 r = self.tradeAPI.get_orders_history('SWAP')
+                return r
+            except Exception as e:
+                time.sleep(5)
+        return 'failure'
+
+
+    @logging
+    def last_order(self, token, order_id):
+        # История по ордерам
+        for _ in range(5):
+            try:
+                r = self.tradeAPI.get_order(f'{token}-USDT-SWAP', ordId=order_id)
                 return r
             except Exception as e:
                 time.sleep(5)
