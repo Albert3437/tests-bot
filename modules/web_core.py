@@ -1,5 +1,5 @@
 import pandas as pd
-from modules.logger import logging
+from modules.logger import logging, logger
 from modules.metrics import Metrics
 from modules.config import *
 from modules.db import DealsDataBase
@@ -33,9 +33,12 @@ class WebCore:
 
     @logging
     def number_of_strat(self):
-        number_of_strategies = 0
-        number_of_strategies += len(read_strategies())
-        return number_of_strategies
+        try:
+            number_of_strategies = 0
+            number_of_strategies += len(read_strategies())
+            return number_of_strategies
+        except Exception as e:
+            logger.error(e)
 
 
     @logging
