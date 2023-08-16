@@ -113,10 +113,11 @@ class okxTrade:
         # История по позициям
         for _ in range(5):
             try:
-                return self.accountAPI.get_positions_history()
+                return self.accountAPI.get_positions_history()['data']
             except:
                 time.sleep
         return 'failure'
+
 
     @logging
     def order_history(self):

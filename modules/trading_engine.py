@@ -47,7 +47,7 @@ class TradingEngine:
 
     @logging
     def close_data(self):
-        r = self.trade.position_list_history()['data'][0]
+        r = self.trade.position_list_history()[0]
         percent = 1 + float(r['pnlRatio'])
         close_price = float(r['closeAvgPx'])
         open_price = float(r['openAvgPx'])

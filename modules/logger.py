@@ -1,5 +1,5 @@
 from loguru import logger
-
+import inspect
 
 
 logger.add("debug.log")
@@ -15,5 +15,5 @@ def logging(func):
             return return_value
         except Exception as e:
             function_name = func.__name__
-            logger.error((function_name, e))
+            logger.error(f'{function_name} {e}')
     return wrapper
