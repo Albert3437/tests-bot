@@ -15,5 +15,5 @@ def logging(func):
             return return_value
         except Exception as e:
             function_name = func.__name__
-            logger.error(f'{function_name} {e}')
+            logger.error(f'Функция: {function_name}. Ошибка: {e}')
     return wrapper

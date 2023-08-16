@@ -12,7 +12,6 @@ class Telegram:
         self.bot = telebot.TeleBot(read_API()['TELE_API'])
         self.chat_id = read_API()['CHAT_ID']
         self.settings_db = read_strategies()
-        self.metric = Metrics()
 
 
     @logging
@@ -31,8 +30,9 @@ class Telegram:
     @logging
     def send_notification(self):
         # Отправка уведомления в чат
-            message = f'Баланс: {round(self.metric.total_balance(),2)}$\nПроцент дохода за день: {self.metric.profit_percent_per_day()}%'
-            self.message(message)
+        metric = Metrics()
+        message = f'Баланс: {round(metric.total_balance(),2)}$\nПроцент дохода за день: {metric.profit_percent_per_day()}%'
+        self.message(message)
             
 
     @logging
