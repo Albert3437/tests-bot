@@ -47,11 +47,15 @@ class TradingEngine:
 
     @logging
     def close_data(self):
-        r = self.trade.position_list_history()[0]
-        percent = 1 + float(r['pnlRatio'])
-        close_price = float(r['closeAvgPx'])
-        open_price = float(r['openAvgPx'])
-        fee = float(r['closeTotalPos']) * float(r['closeAvgPx']) * 0.0005
+        
+        try:
+            r = self.trade.position_list_history()[0]
+            percent = (1 + float(r['pnlRatio']))
+            close_price = float(r['closeAvgPx'])
+            open_price = float(r['openAvgPx'])
+            fee = (float(r['closeTotalPos']) * float(r['closeAvgPx']) * 0.0005)
+        except:
+            percent, close_price, open_price, fee = 0,0,0,0
         return percent, close_price, open_price, fee
 
 

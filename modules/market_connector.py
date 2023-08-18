@@ -115,7 +115,7 @@ class okxTrade:
             try:
                 return self.accountAPI.get_positions_history()['data']
             except:
-                time.sleep
+                time.sleep(5)
         return 'failure'
 
 
