@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 from modules.web_core import WebCore
 from modules.config import *
-
+from configs.config import *
 
 
 
@@ -61,24 +61,20 @@ if col1.button('Удалить стратегию'):
     result = web_core.remove_strategy()
     st.toast(result)
 
-all_indicator_list = ['ADX','Bollinger','CCI','CMF','Ichimoku','MACD','Momentum','OBV','SAR','ROC','RSI','SMA','Stochastic','WPR']
 col2.subheader("Изменение стратегии")
 
 with col2.form("add_form"):
 # НАСТРОИТЬ ОТОБРАЖЕНИЕ ВСЕХ СТАРТОВЫХ ПОЗИЦИЙ
     
     name = st.text_input("Название", value=strat['name'])
-    indicator_list = st.multiselect('Выберите индикаторы',all_indicator_list, default=strat['indicator_list'])
-    arch_list = ["classic", "classic reverse"]
-    arch = st.selectbox("Архитектура", arch_list, index=arch_list.index(strat['arch']))
-    strat_type_list = ["classic", "all signals"]
-    strat_type = st.selectbox("Тип стратегии", strat_type_list, help="classic это закрытие сделок при смене тренда, all signal это закрытие сделок по всем сигналам", index=strat_type_list.index(strat['strat_type']))
+    indicator_list = st.multiselect('Выберите индикаторы',INDICATOR_LIST, default=strat['indicator_list'])
+    arch = st.selectbox("Архитектура", ARCH_LIST, index=ARCH_LIST.index(strat['arch']))
+    strat_type = st.selectbox("Тип стратегии", ARCH_TYPE, help="classic это закрытие сделок при смене тренда, all signal это закрытие сделок по всем сигналам", index=strat_type_list.index(strat['strat_type']))
     stop_loss = st.number_input("Стоп лосс", help='0.98 это 2% для стоп лосса, если не нужен тогда не надо указывать', value=strat['stop_loss'])
     take_profit = st.number_input("Тейк профит", help='1.02 это 2% для тейк профита, если не нужен тогда не надо указывать', value=0)
     balance_ = st.number_input("Стартовый баланс", value=strat['balance'])
-    interval_list = ['1m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '12h']
-    interval = st.selectbox("Интервал", interval_list, index=interval_list.index(strat['interval'])) 
-    token = st.text_input("Токен" ,help='Пример токена: BTC', value=strat['token'])
+    interval = st.selectbox("Интервал", INTERVALS, index=INTERVALS.index(strat['interval'])) 
+    token = st.selectbox("Токен", TOKEN_LIST,help='Пример токена: BTC', value=strat['token'])
     demo_mode = st.checkbox('Демо режим', value=bool(strat['demo_mode']), help='Если отмечено то торговля будет идти через демо счет')
 
     if st.form_submit_button("Изменить"):

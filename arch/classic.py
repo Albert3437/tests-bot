@@ -4,6 +4,7 @@ from modules.indicators import TechnicalIndicators
 from modules.config import read_some_strat
 from modules.logger import logging, logger
 from modules.trading_engine import TradingEngine
+from configs.config import INDICATOR_DICT
 
 class Strategy:
     def __init__(self, strat_name):
@@ -31,22 +32,9 @@ class Strategy:
     def calculate(self, df, signal_list):
         # Вычисление необходимых индикаторов
         ta = TechnicalIndicators(df)
-        indicator_dict = {'ADX':'ta.average_directional_index()',
-                    'Bollinger':'ta.bollinger_bands()',
-                    'CCI':'ta.commodity_channel_index()',
-                    'CMF':'ta.chaikin_money_flow()',
-                    'Ichimoku':'ta.calculate_ichimoku_cloud()',
-                    'MACD':'ta.macd()',
-                    'Momentum':'ta.calculate_momentum_system()',
-                    'OBV':'ta.on_balance_volume()',
-                    'SAR':'ta.parabolic_sar()',
-                    'ROC':'ta.rate_of_change()',
-                    'RSI':'ta.relative_strength_index()',
-                    'SMA':'ta.moving_average()',
-                    'Stochastic':'ta.stochastic_oscillator()',
-                    'WPR':'ta.williams_percent_range()'}
+
         for signal in signal_list:
-            eval(indicator_dict[signal])
+            eval(INDICATOR_DICT[signal])
         return df
 
 

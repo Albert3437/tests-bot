@@ -4,6 +4,7 @@ from pandas import DataFrame
 from modules.logger import logging, logger
 import time
 from modules.config import *
+from configs.config import FEES
 # надо розобраться с ошибкой при закрытии позиций
 # Сделать правильное указание цены
 # Сделать проверку на закрытую сделку
@@ -53,7 +54,7 @@ class TradingEngine:
             percent = (1 + float(r['pnlRatio']))
             close_price = float(r['closeAvgPx'])
             open_price = float(r['openAvgPx'])
-            fee = (float(r['closeTotalPos']) * float(r['closeAvgPx']) * 0.0005)
+            fee = (float(r['closeTotalPos']) * float(r['closeAvgPx']) * FEES)
         except:
             percent, close_price, open_price, fee = 0,0,0,0
         return percent, close_price, open_price, fee
