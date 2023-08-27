@@ -9,6 +9,7 @@ import time
 # У всех функция прописан функционал повторных запросов на сервер при ошибке через бесконечный цикл
 class okxTrade:
     def __init__(self, flag='1'):
+        # Класс для работы с АПИ биржи ОКХ
         with open('configs/API.json', 'r') as f:
             keys = json.load(f)
         API_KEY = keys['OKX_API_KEY']
@@ -21,6 +22,7 @@ class okxTrade:
 
     @logging
     def cancel_order(self, token, ordId):
+        # Ликвидация ордера
         result = self.tradeAPI.cancel_order(instId=f'{token}-USDT-SWAP', ordId=ordId)
         return result
 

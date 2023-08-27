@@ -5,15 +5,17 @@ from modules.metrics import *
 
 @logging
 def init_settings():
+    # Функция проверки на наличие конфигурационного файла стратегий
     try:
         with open('configs/strategies.json', 'r') as f:
             json.load(f)
-    except Exception:
+    except FileExistsError:
             with open('configs/strategies.json', 'w') as f:
                 json.dump([],f)
 
 
 def read(filepath):
+    # Чтение json файла
     with open(filepath, 'r') as f:
         file = json.load(f)
         return file
@@ -21,11 +23,13 @@ def read(filepath):
 
 @logging
 def read_strategies():
+    # Чтение файла стратегий
     return read('configs/strategies.json')
 
 
 @logging
 def read_some_strat(strat_name):
+    # Чтение определенной стратегии
     strats = read_strategies()
     for strat in strats:
         if strat['name'] == strat_name:
@@ -38,11 +42,13 @@ def read_some_strat(strat_name):
 
 @logging
 def read_API():
+    # Чтение Файла АПИ
     return read('configs/API.json')
 
 
 @logging
 def save_dump(filename, data):
+    # Сохранение произвольного файла json
     with open(filename, 'w') as f:
         file = json.dump(data,f)
         return file
@@ -50,6 +56,7 @@ def save_dump(filename, data):
 
 @logging
 def add_new_strat(name:str, indicator_list:list, interval:str, arch:str, strat_type:str, balance:int, token:str, demo_mode:bool=True, status:int=None, *, leverage:int=1, stop_loss:float=None, take_profit:float=None):
+    # Добавление новой стратегии
     strats = read_strategies()
     strats.append({
             "name":name,
@@ -70,6 +77,7 @@ def add_new_strat(name:str, indicator_list:list, interval:str, arch:str, strat_t
 
 @logging
 def change_strat(strat_name, **kwargs):
+    # Изменение определенной стратегии
     strats = read_strategies()
     for strat in strats:
         if strat['name'] == strat_name:
@@ -81,6 +89,7 @@ def change_strat(strat_name, **kwargs):
 
 @logging
 def remove_strat(strat_name):
+    # Удаление определенной стратегии
     strats = read_strategies()
     for strat in strats:
         if strat['name'] == strat_name:
@@ -90,6 +99,7 @@ def remove_strat(strat_name):
 
 @logging
 def api_write(**kwargs):
+    # Измененние АПИ файла
     api = read_API()
     for key, value in kwargs.items():
         if value != None:

@@ -5,6 +5,7 @@ INDICATOR_LIST = ['ADX', 'Bollinger', 'CCI', 'CMF', 'Ichimoku', 'MACD', 'Momentu
 INTERVALS = ['1m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '12h']
 ARCH_LIST = ['classic', "classic reverse"]
 ARCH_TYPE = ['classic', 'all signals']
+INTERVALS_DICT = {'1m':60, '5m':300, '15m':900, '30m':1800, '1h':3600, '2h':7200, '4h':14400, '6h':21600, '12h':43200}
 INDICATOR_DICT = {'ADX':'ta.average_directional_index()',
                     'Bollinger':'ta.bollinger_bands()',
                     'CCI':'ta.commodity_channel_index()',

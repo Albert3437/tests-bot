@@ -4,7 +4,7 @@ from pandas import DataFrame
 from modules.logger import logging, logger
 import time
 from modules.config import *
-from configs.config import FEES
+from configs.config import FEES, INTERVALS_DICT
 # надо розобраться с ошибкой при закрытии позиций
 # Сделать правильное указание цены
 # Сделать проверку на закрытую сделку
@@ -13,6 +13,7 @@ from configs.config import FEES
 
 class TradingEngine:
     def __init__(self, strat_name, flag = '1'):
+        # Это сердце всей программы: торговое ядро, открывает, отслеживает, закрывает, записывает сделки
         self.strat_name = strat_name
         self.trade = okxTrade(flag)
         self.deals_db = DealsDataBase(strat_name)
@@ -20,7 +21,7 @@ class TradingEngine:
 
     @logging
     def summ(self):
-        # функция которая вычисляет размер ордера, на основе фьючерсного смещения цен, а так-же весов для разных типов торговых пар
+        # функция которая вычисляет размер ордера, на основе цен контрактов, а так-же весов для разных типов торговых пар
         strat = read_some_strat(self.strat_name)
         amount = strat['balance']
         token = strat['token']
@@ -40,15 +41,15 @@ class TradingEngine:
 
     @logging
     def wait_time(self):
+        # Функция для получения времени ожидания открытия сделки
         strat = read_some_strat(self.strat_name)
         interval = strat['interval']
-        intervals = {'1m':60, '5m':300, '15m':900, '30m':1800, '1h':3600, '2h':7200, '4h':14400, '6h':21600, '12h':43200}
-        return int(intervals[interval] * 0.6)
+        return int(INTERVALS_DICT[interval] * 0.6)
 
 
     @logging
     def close_data(self):
-        
+        # Функция получения данных по закрытию сделки
         try:
             r = self.trade.position_list_history()[0]
             percent = (1 + float(r['pnlRatio']))
@@ -62,6 +63,7 @@ class TradingEngine:
 
     @logging
     def create_order(self, price, token, side, act_type = 'open'):
+        # Функция создания и отслеживания ордера на открытие или закрытие позиции
         trade = okxTrade()
         if act_type == 'close':
             deal_result = self.trade.long(token, self.summ(), price, side='sell') if side == 'long' else self.trade.short(token, self.summ(), price, side='buy')
@@ -86,6 +88,7 @@ class TradingEngine:
 
     @logging
     def close_deal(self, df, side):
+        # Функция закрытия сделки
         strat = read_some_strat(self.strat_name)
         token, balance = strat['token'], strat['balance']
         price, timestamp = float(df['close'].iloc[-2]), int(df['timestamp'].iloc[-1])
@@ -103,6 +106,7 @@ class TradingEngine:
 
 
     def open_deal(self, df:DataFrame, side:str):
+        # Функция открытия сделки
         deals = self.deals_db.read_deals()
         strat = read_some_strat(self.strat_name)
         token, strat_type = strat['token'], strat['strat_type']
@@ -120,6 +124,7 @@ class TradingEngine:
 
     @logging
     def manage_deals(self, token):
+        # НЕ ИСПОЛЬЗУЕТСЯ
         # Отслеживание сделок и закрытие по стоп лоссу
         while True:
             deal = self.deals_db.read_deals()[-1]

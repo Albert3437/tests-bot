@@ -6,6 +6,7 @@ from modules.logger import logging
 
 class TechnicalIndicators:
     def __init__(self, df):
+        # Класс для вычисления всех индикаторов и записи сразу сигналов в Датафрейм
         self.df = df
         self.df['close'] = pd.to_numeric(self.df['close'], errors='coerce')
         self.df['high'] = pd.to_numeric(self.df['high'], errors='coerce')

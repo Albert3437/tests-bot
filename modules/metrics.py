@@ -7,21 +7,22 @@ from modules.db import DealsDataBase
 
 class Metrics:
     def __init__(self, flag = '1', db_name='test'):
+        # Класс для просчета метрик работы бота
         self.trade = okxTrade(flag)
         self.deals_db = DealsDataBase(db_name)
 
 
     @logging
     def total_balance(self):
-            # Получение и просчет баланса по всем торговым инструментам(вместе с позициями)
-            all = 0
-            bal = self.trade.balance('USDT')
-            deals = self.trade.position_list_active()
-            for deal in deals:
-                pos_size = deal['notionalUsd']
-                all += float(pos_size)
-            all += float(bal)
-            return round(all, 2)
+        # Получение и просчет баланса по всем торговым инструментам(вместе с позициями)
+        all = 0
+        bal = self.trade.balance('USDT')
+        deals = self.trade.position_list_active()
+        for deal in deals:
+            pos_size = deal['notionalUsd']
+            all += float(pos_size)
+        all += float(bal)
+        return round(all, 2)
 
 
     @logging

@@ -24,7 +24,7 @@ class BinanceData:
         
 
     @logging
-    def get_last_candles(self, limit:int=100, symbol:str="BTCUSDT", interval=Client.KLINE_INTERVAL_5MINUTE):
+    def get_last_candles(self, limit:int=200, symbol:str="BTCUSDT", interval=Client.KLINE_INTERVAL_5MINUTE):
         # Получение актуальных свечей
         for _ in range(5):
             try:

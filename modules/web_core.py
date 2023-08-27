@@ -9,8 +9,7 @@ from arch.classic import Strategy
 
 class WebCore:
     def __init__(self, strat_name = 'classic'):
-        # Нужно розобраться с флагами для окх Трейд а так же с параметрами для данного класса, а именно имя стратегии
-        # Сделать возвращение результата выполнения для функций операций
+        # Грубо говоря это бекенд для веб приложения
         self.strat_name = strat_name
         flag = '1'
         strats = read_strategies()
@@ -25,6 +24,7 @@ class WebCore:
 
     @logging
     def get_total_balance(self):
+        # Получение полного баланса
         total_balance = 0
         total_balance = self.metric.total_balance()
         return self.metric.total_balance()
@@ -33,6 +33,7 @@ class WebCore:
 
     @logging
     def number_of_strat(self):
+        # Получение количества существующих стратегий
         try:
             number_of_strategies = 0
             number_of_strategies += len(read_strategies())
@@ -43,6 +44,7 @@ class WebCore:
 
     @logging
     def balance(self, strat_name = None):
+        # Функция получения баланса и процента доходности
         if strat_name == None:
             strat_name = self.strat_name
         profit_percent, balance = 0, 0
@@ -56,6 +58,7 @@ class WebCore:
 
     @logging
     def number_of_deals(self, strat_name=None):
+        # Функция получения количества сделок и процента их доходности
         if strat_name == None:
             strat_name = self.strat_name
         deals_number, profit_deals_percent = 0, 0
@@ -69,6 +72,7 @@ class WebCore:
 
     @logging
     def get_total_fees(self, strat_name = None):
+        # Функция для получения общего числа комисий
         if strat_name == None:
             strat_name = self.strat_name
         total_fee = 0
@@ -78,6 +82,7 @@ class WebCore:
 
     @logging
     def start_strategy(self):
+        # Запуск потока для стратегии
         strat = Strategy(self.strat_name)
         thread = threading.Thread(target=strat.run)
         self.threads[self.strat_name] = (strat, thread)
@@ -86,6 +91,7 @@ class WebCore:
 
     @logging
     def stop_strategy(self):
+        # Отключение потока для стратегии
         if self.strat_name in self.threads:
             strat, thread = self.threads[self.strat_name]
             strat.stop()
@@ -113,6 +119,7 @@ class WebCore:
 
     @logging
     def remove_strategy(self, strat_name = None):
+        # Функция удаления стратегии
         if strat_name == None:
             strat_name = self.strat_name
         strat = read_some_strat(strat_name)
@@ -126,6 +133,7 @@ class WebCore:
 
     @logging
     def close_all_positions(self):
+        # Функция для принудительного закрытия всех сделок
         # Переписать под правильное закрытие позиций
         strats = read_strategies()
         for strat in strats:
@@ -142,6 +150,8 @@ class WebCore:
 
     @logging
     def deact_all_strats(self):
+        # Отключение всех запущеных стратегий
+        # Нужно переписать
         strats = read_strategies()
         for strat in strats:
             if strat['status'] == 'on':
@@ -150,6 +160,7 @@ class WebCore:
 
     @logging
     def strategy_list_active(self) -> pd.DataFrame:
+        # Получение датафрейма со всеми активными стратегиями и их доходностью
         strats = read_strategies()
         for strat in strats:
             balance_amount, profit_percent = self.balance(strat['name'])
@@ -164,10 +175,12 @@ class WebCore:
 
 
     def write_api(self, NGROK_TOKEN, TELE_API, CHAT_ID, OKX_API_KEY, OKX_SECRET, OKX_PASSPHRAZE):
+        # Функция записи АПИ
         api_write(NGROK_TOKEN=NGROK_TOKEN,TELE_API=TELE_API,CHAT_ID=CHAT_ID,OKX_API_KEY=OKX_API_KEY,OKX_SECRET=OKX_SECRET,OKX_PASSPHRAZE=OKX_PASSPHRAZE)
 
 
     def deals_df(self) -> pd.DataFrame:
+        # Получение датафрейма со всеми сделками
         deals = self.deals_db.read_deals(self.strat_name)
         df = pd.DataFrame(data = deals)
         return df
@@ -175,6 +188,7 @@ class WebCore:
 
     @logging
     def logger_data(self) -> pd.DataFrame:
+        # Получение датафрейма с записями логера
         with open('debug.log', 'r') as f:
             data = f.readlines()
         new_data = []
@@ -186,12 +200,14 @@ class WebCore:
 
     @logging
     def clear_logger(self):
+        # Очищение логера
         with open('debug.log', 'w') as f:
             f.write('')
 
 
     @logging
     def strategy_list():
+        # Список стратегий
         strat_names = []
         strats = read_strategies()
         for strat in strats:

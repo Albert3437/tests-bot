@@ -9,6 +9,7 @@ import time
 class Telegram:
     def __init__(self):
         # Инициация класса для работы с телеграмм, данные берутся из конфига
+        # Класс для работы телеграмм бота
         self.bot = telebot.TeleBot(read_API()['TELE_API'])
         self.chat_id = read_API()['CHAT_ID']
         self.settings_db = read_strategies()
