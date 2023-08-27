@@ -9,7 +9,7 @@ def init_settings():
     try:
         with open('configs/strategies.json', 'r') as f:
             json.load(f)
-    except FileExistsError:
+    except FileNotFoundError:
             with open('configs/strategies.json', 'w') as f:
                 json.dump([],f)
 
