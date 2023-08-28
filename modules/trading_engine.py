@@ -64,26 +64,29 @@ class TradingEngine:
     @logging
     def create_order(self, price, token, side, act_type = 'open'):
         # Функция создания и отслеживания ордера на открытие или закрытие позиции
-        trade = okxTrade()
-        if act_type == 'close':
-            deal_result = self.trade.long(token, self.summ(), price, side='sell') if side == 'long' else self.trade.short(token, self.summ(), price, side='buy')
-        else:
-            deal_result = self.trade.long(token, self.summ(), price) if side == 'long' else self.trade.short(token, self.summ(), price)
-        if deal_result['data'][0]['sMsg'] == 'Order placed':
-            order_id = deal_result['data'][0]['ordId']
-            for _ in range(self.wait_time()):
-                status = trade.last_order('ADA', order_id)['data'][0]['state']
-                if status == 'filled':
-                    return deal_result, status
-                time.sleep(1)
+        try:    
+            trade = okxTrade()
+            if act_type == 'close':
+                deal_result = self.trade.long(token, self.summ(), price, side='sell') if side == 'long' else self.trade.short(token, self.summ(), price, side='buy')
             else:
-                if act_type == 'close':
-                    #trade.cancel_order(token, order_id) вроду бы работает без этого
-                    deal_result = self.trade.long(token, self.summ(), '', side='sell', ordType='market') if side == 'long' else self.trade.short(token, self.summ(), '', side='buy', ordType='market')
+                deal_result = self.trade.long(token, self.summ(), price) if side == 'long' else self.trade.short(token, self.summ(), price)
+            if deal_result['data'][0]['sMsg'] == 'Order placed':
+                order_id = deal_result['data'][0]['ordId']
+                for _ in range(self.wait_time()):
+                    status = trade.last_order('ADA', order_id)['data'][0]['state']
+                    if status == 'filled':
+                        return deal_result, status
+                    time.sleep(1)
                 else:
-                    trade.cancel_order(token, order_id)
-                status = trade.last_order('ADA', order_id)['data'][0]['state']
-                return deal_result, status
+                    if act_type == 'close':
+                        #trade.cancel_order(token, order_id) вроду бы работает без этого
+                        deal_result = self.trade.long(token, self.summ(), '', side='sell', ordType='market') if side == 'long' else self.trade.short(token, self.summ(), '', side='buy', ordType='market')
+                    else:
+                        trade.cancel_order(token, order_id)
+                    status = trade.last_order('ADA', order_id)['data'][0]['state']
+                    return deal_result, status
+        except Exception as e:
+            logger.error(e)
 
 
     @logging
