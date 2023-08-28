@@ -65,25 +65,30 @@ class TradingEngine:
     def create_order(self, price, token, side, act_type = 'open'):
         # Функция создания и отслеживания ордера на открытие или закрытие позиции
         try:    
-            trade = okxTrade()
+            # Блок для создания заявки на открытие или закрытие позиции
             if act_type == 'close':
                 deal_result = self.trade.long(token, self.summ(), price, side='sell') if side == 'long' else self.trade.short(token, self.summ(), price, side='buy')
             else:
                 deal_result = self.trade.long(token, self.summ(), price) if side == 'long' else self.trade.short(token, self.summ(), price)
+            # Блок для отслеживания сделки
             if deal_result['data'][0]['sMsg'] == 'Order placed':
                 order_id = deal_result['data'][0]['ordId']
+                # Блок для проверки на статус сделки
                 for _ in range(self.wait_time()):
-                    status = trade.last_order('ADA', order_id)['data'][0]['state']
+                    status = self.trade.last_order(token, order_id)['data'][0]['state']
                     if status == 'filled':
                         return deal_result, status
                     time.sleep(1)
+                # Блок для незаполненой сделки
                 else:
                     if act_type == 'close':
-                        #trade.cancel_order(token, order_id) вроду бы работает без этого
+                        #Блок для закрытия сделки по текущей рыночной цене
+                        #trade.cancel_order(token, order_id) вроде работает без этого
                         deal_result = self.trade.long(token, self.summ(), '', side='sell', ordType='market') if side == 'long' else self.trade.short(token, self.summ(), '', side='buy', ordType='market')
                     else:
-                        trade.cancel_order(token, order_id)
-                    status = trade.last_order('ADA', order_id)['data'][0]['state']
+                        # Блок открытия сделки
+                        self.trade.cancel_order(token, order_id)
+                    status = self.trade.last_order(token, order_id)['data'][0]['state']
                     return deal_result, status
         except Exception as e:
             logger.error(e)
@@ -108,6 +113,7 @@ class TradingEngine:
         return close_result
 
 
+    @logging
     def open_deal(self, df:DataFrame, side:str):
         # Функция открытия сделки
         deals = self.deals_db.read_deals()
@@ -117,10 +123,13 @@ class TradingEngine:
         if len(deals) == 0 or deals[-1]['deal_type'] != side or strat_type == 'all signals':
             if len(deals) != 0 and deals[-1]['commision'] == None:
                 self.close_deal(df, side)
-            deal_result, status = self.create_order(price, token, side)
-            order_id = deal_result['data'][0]['ordId']
-            _, _, open_price, _ = self.close_data()
-            self.deals_db.open_deal(order_id, timestamp, open_price, side, status)
+            try:
+                deal_result, status = self.create_order(price, token, side)
+                order_id = deal_result['data'][0]['ordId']
+                _, _, open_price, _ = self.close_data()
+                self.deals_db.open_deal(order_id, timestamp, open_price, side, status)
+            except Exception as e:
+                logger.error(e)
             logger.info(deal_result)
             return deal_result
 
