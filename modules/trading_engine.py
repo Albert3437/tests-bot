@@ -1,9 +1,11 @@
-from modules.market_connector import okxTrade
-from modules.db import *
-from pandas import DataFrame
-from modules.logger import logging, logger
 import time
+
+from pandas import DataFrame
+
 from modules.config import *
+from modules.db import *
+from modules.market_connector import okxTrade
+from modules.logger import logging, logger
 from configs.config import FEES, INTERVALS_DICT
 # надо розобраться с ошибкой при закрытии позиций
 # Сделать правильное указание цены
@@ -27,9 +29,9 @@ class TradingEngine:
         token = strat['token']
         actual_price = self.trade.actual_price(token)
         if token == 'ETH':
-            amount = amount/actual_price * 100 # Это просчет количества контрактов для своповой торговли
+            amount = amount/actual_price * 100  # Это просчет количества контрактов для своповой торговли
         elif token == 'XRP':
-            amount = amount/actual_price / 100 # И для каждой пары он свой
+            amount = amount/actual_price / 100  # И для каждой пары он свой
         elif token == 'ADA':
             amount = amount/actual_price
         elif token == 'SOL':
@@ -108,7 +110,7 @@ class TradingEngine:
         else:
             percent, close_price, _, fee = self.close_data()
             self.deals_db.close_deal(timestamp, close_price, percent, fee)
-        change_strat(self.strat_name, balance = balance*percent)
+            change_strat(self.strat_name, balance = balance*percent)
         logger.info(close_result)
         return close_result
 

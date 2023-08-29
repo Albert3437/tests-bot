@@ -1,4 +1,5 @@
 import streamlit as st
+
 from modules.config import add_new_strat
 from modules.db import DealsDataBase
 from configs.config import *

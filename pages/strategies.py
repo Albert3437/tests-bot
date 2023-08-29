@@ -1,5 +1,5 @@
-import pandas as pd
 import streamlit as st
+
 from modules.web_core import WebCore
 from modules.config import *
 from configs.config import *

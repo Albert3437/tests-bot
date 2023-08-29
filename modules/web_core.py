@@ -1,10 +1,11 @@
+import threading
 import pandas as pd
+
 from modules.logger import logging, logger
 from modules.metrics import Metrics
 from modules.config import *
 from modules.db import DealsDataBase
 from modules.market_connector import okxTrade
-import threading
 from arch.classic import Strategy
 
 class WebCore:

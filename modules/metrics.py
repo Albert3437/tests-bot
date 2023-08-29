@@ -1,5 +1,5 @@
-from modules.market_connector import okxTrade
 from modules.db import *
+from modules.market_connector import okxTrade
 from modules.logger import logging
 from modules.db import DealsDataBase
 

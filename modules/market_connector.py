@@ -1,9 +1,12 @@
+import json
+import time
+
 import okx.MarketData as Market
 import okx.Account as Account
 import okx.Trade as Trade
+
 from modules.logger import logging
-import json
-import time
+
 
 
 # У всех функция прописан функционал повторных запросов на сервер при ошибке через бесконечный цикл

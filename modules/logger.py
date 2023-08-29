@@ -1,5 +1,4 @@
 from loguru import logger
-import sys
 
 logger.add("debug.log")
 

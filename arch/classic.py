@@ -1,4 +1,5 @@
 from time import sleep, time
+
 from modules.kline_collector import BinanceData
 from modules.indicators import TechnicalIndicators
 from modules.config import read_some_strat

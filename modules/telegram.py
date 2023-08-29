@@ -1,10 +1,13 @@
+import time
+
+import schedule
 import telebot
+from telebot.types import ReplyKeyboardMarkup, KeyboardButton
+
 from modules.logger import logging
 from modules.config import read_API, read_strategies
-from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 from modules.metrics import Metrics
-import schedule
-import time
+
 
 class Telegram:
     def __init__(self):

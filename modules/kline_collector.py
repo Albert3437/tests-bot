@@ -1,7 +1,10 @@
-from binance.client import Client
-import pandas as pd
-from modules.logger import logging
 import time
+
+import pandas as pd
+
+from binance.client import Client
+from modules.logger import logging
+
 
 
 class BinanceData:
