@@ -88,7 +88,7 @@ class WebCore:
 
     @logging
     def start_stop_response(self, status:str):
-        url = f'http://127.0.0.1:5000/{status}_strat'   # status может быть start или stop
+        url = f'http://127.0.0.1:5002/{status}_strat'   # status может быть start или stop
         params = {'strat_name': self.strat_name}
         response = requests.post(url, data=params)
         return response.text
