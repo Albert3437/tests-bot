@@ -1,4 +1,5 @@
 import threading
+import requests
 import pandas as pd
 
 from modules.trading_engine import TradingEngine
@@ -86,22 +87,11 @@ class WebCore:
 
 
     @logging
-    def start_strategy(self):
-        # Запуск потока для стратегии
-        strat = Strategy(self.strat_name)
-        thread = threading.Thread(target=strat.run)
-        self.threads[self.strat_name] = (strat, thread)
-        thread.start()
-
-
-    @logging
-    def stop_strategy(self):
-        # Отключение потока для стратегии
-        if self.strat_name in self.threads:
-            strat, thread = self.threads[self.strat_name]
-            strat.stop()
-            thread.join()
-            del self.threads[self.strat_name]
+    def start_stop_response(self, status:str):
+        url = f'http://127.0.0.1:5000/{status}_strat'   # status может быть start или stop
+        params = {'strat_name': self.strat_name}
+        response = requests.post(url, data=params)
+        return response.text
 
 
     @logging
@@ -109,16 +99,15 @@ class WebCore:
         # Функция включени и выключения бота
         if strat_name == None:
             strat_name = self.strat_name
-        strats = read_strategies()
-        for strat in strats:
-            if strat['status'] == 'on' and strat['name'] == strat_name:
-                change_strat(strat_name, status = 'off')
-                self.stop_strategy()
-                return 'Выключено'
-            elif strat['status'] == 'off' and strat['name'] == strat_name:
-                change_strat(strat_name, status = 'on')
-                self.start_strategy()
-                return 'Включено'
+        strat = read_some_strat(strat_name)
+        if strat['status'] == 'on':
+            change_strat(strat_name, status = 'off')
+            self.start_stop_response('stop')
+            return 'Выключено'
+        elif strat['status'] == 'off':
+            change_strat(strat_name, status = 'on')
+            self.start_stop_response('start')
+            return 'Включено'
 
 
 
