@@ -8,3 +8,4 @@ pyngrok
 loguru
 pymysql
 streamlit
+Flask
