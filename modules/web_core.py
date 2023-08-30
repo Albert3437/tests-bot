@@ -1,12 +1,16 @@
 import threading
 import pandas as pd
 
+from modules.trading_engine import TradingEngine
 from modules.logger import logging, logger
 from modules.metrics import Metrics
 from modules.config import *
 from modules.db import DealsDataBase
 from modules.market_connector import okxTrade
 from arch.classic import Strategy
+from modules.kline_collector import BinanceData
+
+
 
 class WebCore:
     def __init__(self, strat_name = 'classic'):
@@ -137,9 +141,12 @@ class WebCore:
         # Функция для принудительного закрытия всех сделок
         # Переписать под правильное закрытие позиций
         strats = read_strategies()
+        trade_engine = TradingEngine(self.strat_name)
+        trade_data = BinanceData()
         for strat in strats:
-            self.trade.close_position(strat['token'], 'long')
-            self.trade.close_position(strat['token'], 'short')
+            df = trade_data.get_last_candles(strat['token'])
+            trade_engine.close_deal(df, 'long')
+            trade_engine.close_deal(df, 'short')
 
 
     @logging
@@ -157,6 +164,11 @@ class WebCore:
         for strat in strats:
             if strat['status'] == 'on':
                 change_strat(strat['name'], status = 'off')
+                if strat['name'] in self.threads:
+                    strat, thread = self.threads[strat['name']]
+                    strat.stop()
+                    thread.join()
+                    del self.threads[strat['name']]
 
 
     @logging
