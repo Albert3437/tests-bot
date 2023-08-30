@@ -65,7 +65,7 @@ class Strategy:
         while self.runing:
             indicator_list, token, strat_name, interval = self.strategy['indicator_list'], self.strategy['token'],self.strategy['name'], self.strategy['interval']
             trading_engine = TradingEngine(strat_name)
-            df = self.trade_data.get_last_candles(symbol=f'{token}USDT', interval=interval)
+            df = self.trade_data.get_last_candles(symbol=token, interval=interval)
             timestamp = df['timestamp'].iloc[-1]
             if self.strategy['status'] == 'on' and self.strategy['arch'] == "classic":
                 # Работа с первым подтипом  стратегии

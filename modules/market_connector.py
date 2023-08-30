@@ -47,7 +47,7 @@ class okxTrade:
     
 
     @logging
-    def long(self, token, amount, price, side="buy", ordType='limit'):
+    def long(self, token, amount, price='', side="buy", ordType='market'):
         # Открытие лонговой сделки по маркет цене
         for _ in range(5):
             try:
@@ -67,7 +67,7 @@ class okxTrade:
 
 
     @logging
-    def short(self, token, amount, price, side="sell", ordType='limit'):
+    def short(self, token, amount, price='', side="sell", ordType='market'):
         # Открытие шортовой сделки по маркет цене
         for _ in range(5):
             try:

@@ -6,7 +6,7 @@ from modules.config import *
 from modules.db import *
 from modules.market_connector import okxTrade
 from modules.logger import logging, logger
-from configs.config import FEES, INTERVALS_DICT
+from configs.config import FEES, INTERVALS_DICT, COEF
 # надо розобраться с ошибкой при закрытии позиций
 # Сделать правильное указание цены
 # Сделать проверку на закрытую сделку
@@ -19,25 +19,16 @@ class TradingEngine:
         self.strat_name = strat_name
         self.trade = okxTrade(flag)
         self.deals_db = DealsDataBase(strat_name)
-        
+
 
     @logging
     def summ(self):
         # функция которая вычисляет размер ордера, на основе цен контрактов, а так-же весов для разных типов торговых пар
         strat = read_some_strat(self.strat_name)
-        amount = strat['balance']
-        token = strat['token']
+        amount, token = strat['balance'], strat['token']
         actual_price = self.trade.actual_price(token)
-        if token == 'ETH':
-            amount = amount/actual_price * 100  # Это просчет количества контрактов для своповой торговли
-        elif token == 'XRP':
-            amount = amount/actual_price / 100  # И для каждой пары он свой
-        elif token == 'ADA':
-            amount = amount/actual_price
-        elif token == 'SOL':
-            amount = amount/actual_price * 10
-        else:
-            amount = amount/actual_price * 1000
+        amount = amount/actual_price * COEF[token]
+        logger.info(amount)
         return int(amount)
 
 
@@ -46,6 +37,7 @@ class TradingEngine:
         # Функция для получения времени ожидания открытия сделки
         strat = read_some_strat(self.strat_name)
         interval = strat['interval']
+        logger.info(INTERVALS_DICT[interval] * 0.6)
         return int(INTERVALS_DICT[interval] * 0.6)
 
 
@@ -58,8 +50,10 @@ class TradingEngine:
             close_price = float(r['closeAvgPx'])
             open_price = float(r['openAvgPx'])
             fee = (float(r['closeTotalPos']) * float(r['closeAvgPx']) * FEES)
+            logger.info(r)
         except:
             percent, close_price, open_price, fee = 0,0,0,0
+        logger.info((percent, close_price, open_price, fee))
         return percent, close_price, open_price, fee
 
 
@@ -69,9 +63,10 @@ class TradingEngine:
         try:    
             # Блок для создания заявки на открытие или закрытие позиции
             if act_type == 'close':
-                deal_result = self.trade.long(token, self.summ(), price, side='sell') if side == 'long' else self.trade.short(token, self.summ(), price, side='buy')
+                deal_result = self.trade.long(token, self.summ(), price, side='sell', ordType='limit') if side == 'long' else self.trade.short(token, self.summ(), price, side='buy', ordType='limit')
             else:
-                deal_result = self.trade.long(token, self.summ(), price) if side == 'long' else self.trade.short(token, self.summ(), price)
+                deal_result = self.trade.long(token, self.summ(), price, ordType='limit') if side == 'long' else self.trade.short(token, self.summ(), price, ordType='limit')
+            logger.info(deal_result)
             # Блок для отслеживания сделки
             if deal_result['data'][0]['sMsg'] == 'Order placed':
                 order_id = deal_result['data'][0]['ordId']
@@ -86,7 +81,7 @@ class TradingEngine:
                     if act_type == 'close':
                         #Блок для закрытия сделки по текущей рыночной цене
                         #trade.cancel_order(token, order_id) вроде работает без этого
-                        deal_result = self.trade.long(token, self.summ(), '', side='sell', ordType='market') if side == 'long' else self.trade.short(token, self.summ(), '', side='buy', ordType='market')
+                        deal_result = self.trade.long(token, self.summ(), side='sell') if side == 'long' else self.trade.short(token, self.summ(), side='buy')
                     else:
                         # Блок открытия сделки
                         self.trade.cancel_order(token, order_id)
