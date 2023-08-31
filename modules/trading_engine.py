@@ -28,17 +28,16 @@ class TradingEngine:
         amount, token = strat['balance'], strat['token']
         actual_price = self.trade.actual_price(token)
         amount = amount/actual_price * COEF[token]
-        logger.info(amount)
         return int(amount)
 
 
     @logging
-    def wait_time(self):
+    def wait_time(self, deal_type:str):
         # Функция для получения времени ожидания открытия сделки
         strat = read_some_strat(self.strat_name)
         interval = strat['interval']
-        logger.info(INTERVALS_DICT[interval] * 0.6)
-        return int(INTERVALS_DICT[interval] * 0.6)
+        coef_dict = {'open':0.6, 'close':0.3}
+        return int(INTERVALS_DICT[interval] * coef_dict[deal_type])
 
 
     @logging
@@ -50,45 +49,44 @@ class TradingEngine:
             close_price = float(r['closeAvgPx'])
             open_price = float(r['openAvgPx'])
             fee = (float(r['closeTotalPos']) * float(r['closeAvgPx']) * FEES)
-            logger.info(r)
         except:
             percent, close_price, open_price, fee = 0,0,0,0
-        logger.info((percent, close_price, open_price, fee))
         return percent, close_price, open_price, fee
+
+
+    @logging
+    def place_order(self, token:str, price:float, side:str, act_type:str, ordType:str):
+        # Функция прокладка для открытия сделки
+        side_types = {'long':{'open':'buy', 'close':'sell'}, 'short':{'open':'sell', 'close':'buy'}}
+        deal_result = self.trade.open_pos(token, self.summ(), side, price,  side=side_types[side][act_type], ordType=ordType)
+        return deal_result
+
 
 
     @logging
     def create_order(self, price, token, side, act_type = 'open'):
         # Функция создания и отслеживания ордера на открытие или закрытие позиции
-        try:    
-            # Блок для создания заявки на открытие или закрытие позиции
-            if act_type == 'close':
-                deal_result = self.trade.long(token, self.summ(), price, side='sell', ordType='limit') if side == 'long' else self.trade.short(token, self.summ(), price, side='buy', ordType='limit')
+        # Блок для создания заявки на открытие или закрытие позиции
+        deal_result = self.place_order(token, price, side, act_type, 'limit')
+        # Блок для отслеживания сделки
+        if deal_result['data'][0]['sMsg'] == 'Order placed':
+            order_id = deal_result['data'][0]['ordId']
+            # Блок для проверки на статус сделки
+            for _ in range(self.wait_time(act_type)):
+                order_status = self.trade.last_order(token, order_id)['data'][0]['state']
+                if order_status == 'filled':
+                    return deal_result, order_status
+                time.sleep(1)
             else:
-                deal_result = self.trade.long(token, self.summ(), price, ordType='limit') if side == 'long' else self.trade.short(token, self.summ(), price, ordType='limit')
-            logger.info(deal_result)
-            # Блок для отслеживания сделки
-            if deal_result['data'][0]['sMsg'] == 'Order placed':
-                order_id = deal_result['data'][0]['ordId']
-                # Блок для проверки на статус сделки
-                for _ in range(self.wait_time()):
-                    status = self.trade.last_order(token, order_id)['data'][0]['state']
-                    if status == 'filled':
-                        return deal_result, status
-                    time.sleep(1)
                 # Блок для незаполненой сделки
+                if act_type == 'close':
+                    #Блок для закрытия сделки по текущей рыночной цене
+                    deal_result = self.place_order(token, '', side, act_type, 'market')
                 else:
-                    if act_type == 'close':
-                        #Блок для закрытия сделки по текущей рыночной цене
-                        #trade.cancel_order(token, order_id) вроде работает без этого
-                        deal_result = self.trade.long(token, self.summ(), side='sell') if side == 'long' else self.trade.short(token, self.summ(), side='buy')
-                    else:
-                        # Блок открытия сделки
-                        self.trade.cancel_order(token, order_id)
-                    status = self.trade.last_order(token, order_id)['data'][0]['state']
-                    return deal_result, status
-        except Exception as e:
-            logger.error(e)
+                    # Блок для отмены сделки
+                    self.trade.cancel_order(token, order_id)
+                order_status = self.trade.last_order(token, order_id)['data'][0]['state']
+                return deal_result, order_status
 
 
     @logging
@@ -106,7 +104,6 @@ class TradingEngine:
             percent, close_price, _, fee = self.close_data()
             self.deals_db.close_deal(timestamp, close_price, percent, fee)
             change_strat(self.strat_name, balance = balance*percent)
-        logger.info(close_result)
         return close_result
 
 
@@ -125,9 +122,9 @@ class TradingEngine:
                 order_id = deal_result['data'][0]['ordId']
                 _, _, open_price, _ = self.close_data()
                 self.deals_db.open_deal(order_id, timestamp, open_price, side, status)
+                logger.info(deal_result)
             except Exception as e:
                 logger.error(e)
-            logger.info(deal_result)
             return deal_result
 
 

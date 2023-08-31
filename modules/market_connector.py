@@ -44,7 +44,28 @@ class okxTrade:
             except Exception as e:
                 time.sleep(5)
         return 'eror'
-    
+
+
+    @logging
+    def open_pos(self, token, amount, posSide, price='', side="buy", ordType='market'):
+        # Открытие лонговой сделки по маркет цене
+        for _ in range(5):
+            try:
+                result = self.tradeAPI.place_order(
+                    instId=f"{token}-USDT-SWAP",
+                    tdMode="cross",
+                    side=side,
+                    posSide=posSide,
+                    ordType=ordType,
+                    px=price,
+                    sz=amount # 1 == 0.001 BTC , i dont know why it is so
+                )
+                return result
+            except Exception as e:
+                time.sleep(5)
+        return 'failure'
+
+
 
     @logging
     def long(self, token, amount, price='', side="buy", ordType='market'):
