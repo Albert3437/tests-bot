@@ -36,7 +36,7 @@ class TradingEngine:
         # Функция для получения времени ожидания открытия сделки
         strat = read_some_strat(self.strat_name)
         interval = strat['interval']
-        coef_dict = {'open':0.6, 'close':0.3}
+        coef_dict = {'open':0.3, 'close':0.3}
         return int(INTERVALS_DICT[interval] * coef_dict[deal_type])
 
 
@@ -116,15 +116,12 @@ class TradingEngine:
         price, timestamp = float(df['close'].iloc[-2]), int(df['timestamp'].iloc[-1])
         if len(deals) == 0 or deals[-1]['deal_type'] != side or strat_type == 'all signals':
             if len(deals) != 0 and deals[-1]['commision'] == None:
-                self.close_deal(df, side)
-            try:
-                deal_result, status = self.create_order(price, token, side)
-                order_id = deal_result['data'][0]['ordId']
-                _, _, open_price, _ = self.close_data()
-                self.deals_db.open_deal(order_id, timestamp, open_price, side, status)
-                logger.info(deal_result)
-            except Exception as e:
-                logger.error(e)
+                self.close_deal(df, deals[-1]['deal_type'])
+            deal_result, status = self.create_order(price, token, side)
+            order_id = deal_result['data'][0]['ordId']
+            _, _, open_price, _ = self.close_data()
+            self.deals_db.open_deal(order_id, timestamp, open_price, side, status)
+            logger.info(deal_result)
             return deal_result
 
 
