@@ -6,9 +6,9 @@ from modules.trading_engine import TradingEngine
 from modules.logger import logging, logger
 from modules.metrics import Metrics
 from modules.config import *
+from configs.config import * 
 from modules.db import DealsDataBase
 from modules.market_connector import okxTrade
-from arch.classic import Strategy
 from modules.kline_collector import BinanceData
 
 
@@ -31,10 +31,27 @@ class WebCore:
     @logging
     def get_total_balance(self):
         # Получение полного баланса
-        total_balance = 0
+        #total_balance = 0
         total_balance = self.metric.total_balance()
-        return self.metric.total_balance()
+        profit_percent = (total_balance / START_BALANCE - 1) * 100
+        return total_balance, round(profit_percent, 2)
 
+
+    @logging
+    def get_balance_list(self):
+        strats = read_strategies()
+        total_balance = self.metric.total_balance()
+        balance_list = []
+        balance = START_BALANCE
+        for strat in strats:
+            db = DealsDataBase(strat['name'])
+            deals = db.read_deals()
+            sorted_deals = sorted(deals, key=lambda x: x['open_timestamp'])
+            for deal in sorted_deals:
+                percent = ((deal['percent'] or 1) - 1) / (total_balance / strat['balance'])
+                balance *= percent+1
+                balance_list.append(balance)
+        return balance_list
 
 
     @logging
@@ -81,10 +98,18 @@ class WebCore:
         # Функция для получения общего числа комисий
         if strat_name == None:
             strat_name = self.strat_name
-        total_fee = 0
         total_fee = self.metric.total_fees(strat_name)
         return round(total_fee, 2) # Функция получения комисий
 
+
+    @logging
+    def get_all_fees(self):
+        strats = read_strategies()
+        all_fees = 0
+        for strat in strats:
+            all_fees += self.get_total_fees(strat['name'])
+        return all_fees
+        
 
     @logging
     def start_stop_response(self, status:str):
@@ -167,7 +192,7 @@ class WebCore:
         for strat in strats:
             balance_amount, profit_percent = self.balance(strat['name'])
             deals_number, profit_deals_number = self.number_of_deals(strat['name'])
-            total_fee = self.get_total_fees()
+            total_fee = self.get_total_fees(strat['name'])
             strat['balance_amount'] = balance_amount
             strat['profit_percent'] = profit_percent
             strat['deals_number'] = deals_number

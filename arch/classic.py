@@ -48,7 +48,6 @@ class Strategy:
         # Определение текущего сигнала
         pos_side = 0
         signals = set()
-        logger.info('test')
         for sign in indicator_list:
             signals.add(df[f'{sign} signal'].iloc[-2])
 

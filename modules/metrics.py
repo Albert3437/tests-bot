@@ -42,8 +42,6 @@ class Metrics:
         # Процент Прибыли за все время, по токену
         deals = self.deals_db.read_deals(db_name)
         deal_len = len(deals)
-        if deal_len == 0:
-            deal_len = 1
         success = deal_len
         for deal in deals:
             profit_percent = deal['percent']
@@ -54,6 +52,8 @@ class Metrics:
                 success -= 1
                 if profit_percent == 0:
                     deal_len -= 1
+        if deal_len == 0:
+            deal_len = 1
         return success / deal_len * 100
 
 
