@@ -104,7 +104,7 @@ class TradingEngine:
         else:
             percent, close_price, _, fee = self.close_data()
             self.deals_db.close_deal(timestamp, close_price, percent, fee)
-            change_strat(self.strat_name, balance = balance*percent)
+            change_strat(self.strat_name, balance = balance*percent-fee)
         return close_result
 
 
