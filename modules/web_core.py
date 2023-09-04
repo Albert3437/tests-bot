@@ -108,7 +108,7 @@ class WebCore:
         all_fees = 0
         for strat in strats:
             all_fees += self.get_total_fees(strat['name'])
-        return all_fees
+        return round(all_fees, 2)
         
 
     @logging
