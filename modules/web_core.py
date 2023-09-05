@@ -243,7 +243,7 @@ class WebCore:
 
     @logging
     def work_status(self):
-        strat = read_some_strat('test')
+        strat = read_some_strat(self.strat_name)
         diff = time.time() - strat['timing_status']
         interval = INTERVALS_DICT[strat['interval']] * 1.5
 
