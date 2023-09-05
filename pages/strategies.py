@@ -10,32 +10,40 @@ st.set_page_config(layout='wide')
 
 
 def strategy_list():
-        strat_names = []
-        strats = read_strategies()
-        for strat in strats:
-            strat_names.append(strat['name'])
-        return strat_names
+    strat_names = []
+    strats = read_strategies()
+    for strat in strats:
+        strat_names.append(strat['name'])
+    return strat_names
 
 
 strat_name = st.selectbox(
     'Выберите стратегию',
     strategy_list())
-strat = read_some_strat(strat_name)
-if strat['status'] == 'on':
-    st.success('Запущен')
-else:
-    st.error('Выключен')
-
 web_core = WebCore(strat_name)
 
-col1, col2, col3 = st.columns(3)
+
+col1, col2 = st.columns(2)
+strat = read_some_strat(strat_name)
+
+if strat['status'] == 'on':
+    col1.success('Запущенa')
+else:
+    col1.error('Выключенa')
+
+if web_core.work_status():
+    col2.success('В порядке')
+elif strat['status'] == 'off':
+    col2.error('Выключенa')
+else:
+    col2.error('Ошибка')
 
 
 balance_amount, profit_percent = web_core.balance(strat_name)
 deals_number, profit_deals_percent = web_core.number_of_deals()
 total_fee = web_core.get_total_fees()
 
-
+col1, col2, col3 = st.columns(3)
 col1.metric('Balance', f'{balance_amount} $', f'{profit_percent} %')
 col2.metric('Deals', deals_number, f'{profit_deals_percent} %')
 col3.metric('Fee`s', f'{total_fee} $')

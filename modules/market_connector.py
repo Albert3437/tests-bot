@@ -6,18 +6,19 @@ import okx.Account as Account
 import okx.Trade as Trade
 
 from modules.logger import logging
-
+from configs.config import *
 
 
 # У всех функция прописан функционал повторных запросов на сервер при ошибке через бесконечный цикл
 class okxTrade:
-    def __init__(self, flag='1'):
+    def __init__(self, flag=str(DEMO_MODE)):
         # Класс для работы с АПИ биржи ОКХ
         with open('configs/API.json', 'r') as f:
             keys = json.load(f)
-        API_KEY = keys['OKX_API_KEY']
-        SECRET = keys['OKX_SECRET']
-        PASSPHRAZE = keys['OKX_PASSPHRAZE']
+        mode = 'DEMO' if DEMO_MODE else 'REAL'
+        API_KEY = keys[f'{mode}_OKX_API_KEY']
+        SECRET = keys[f'{mode}_OKX_SECRET']
+        PASSPHRAZE = keys[f'{mode}_OKX_PASSPHRAZE']
         self.tradeAPI = Trade.TradeAPI(API_KEY, SECRET, PASSPHRAZE, False, flag)
         self.accountAPI = Account.AccountAPI(API_KEY, SECRET, PASSPHRAZE, False, flag)
         self.marketAPI = Market.MarketAPI(API_KEY, SECRET, PASSPHRAZE, False, flag)

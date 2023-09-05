@@ -1,4 +1,5 @@
-import threading
+import time
+
 import requests
 import pandas as pd
 
@@ -17,12 +18,12 @@ class WebCore:
     def __init__(self, strat_name = 'classic'):
         # Грубо говоря это бекенд для веб приложения
         self.strat_name = strat_name
-        flag = '1'
+        flag = str(DEMO_MODE)
         strats = read_strategies()
         for strat in strats:
             if strat_name == strat['name']:
                 flag = str(strat['demo_mode'])
-        self.metric = Metrics(flag, strat_name)
+        self.metric = Metrics(strat_name)
         self.deals_db = DealsDataBase(strat_name)
         self.trade = okxTrade(flag)
         self.threads = {}
@@ -112,9 +113,11 @@ class WebCore:
         
 
     @logging
-    def start_stop_response(self, status:str):
+    def start_stop_response(self, status:str, strat_name:str=None):
+        if strat_name == None:
+            strat_name = self.strat_name
         url = f'http://127.0.0.1:5002/{status}_strat'   # status может быть start или stop
-        params = {'strat_name': self.strat_name}
+        params = {'strat_name': strat_name}
         response = requests.post(url, data=params)
         return response.text
 
@@ -178,11 +181,7 @@ class WebCore:
         for strat in strats:
             if strat['status'] == 'on':
                 change_strat(strat['name'], status = 'off')
-                if strat['name'] in self.threads:
-                    strat, thread = self.threads[strat['name']]
-                    strat.stop()
-                    thread.join()
-                    del self.threads[strat['name']]
+                self.start_stop_response('stop', strat['name'])
 
 
     @logging
@@ -240,3 +239,12 @@ class WebCore:
         for strat in strats:
             strat_names.append(strat['name'])
         return strat_names
+    
+
+    @logging
+    def work_status(self):
+        strat = read_some_strat('test')
+        diff = time.time() - strat['timing_status']
+        interval = INTERVALS_DICT[strat['interval']] * 1.5
+
+        return diff<interval

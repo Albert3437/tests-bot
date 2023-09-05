@@ -1,4 +1,5 @@
 import time
+import math
 
 from pandas import DataFrame
 
@@ -14,10 +15,11 @@ from configs.config import FEES, INTERVALS_DICT, COEF
 
 
 class TradingEngine:
-    def __init__(self, strat_name, flag = '1'):
+    def __init__(self, strat_name):
         # Это сердце всей программы: торговое ядро, открывает, отслеживает, закрывает, записывает сделки
         self.strat_name = strat_name
-        self.trade = okxTrade(flag)
+        strat = read_some_strat(strat_name)
+        self.trade = okxTrade(str(int(strat['demo_mode'])))
         self.deals_db = DealsDataBase(strat_name)
 
 
@@ -28,7 +30,7 @@ class TradingEngine:
         amount, token = strat['balance'], strat['token']
         actual_price = self.trade.actual_price(token)
         amount = amount/actual_price * COEF[token]
-        return int(amount)
+        return math.ceil(amount)
 
 
     @logging

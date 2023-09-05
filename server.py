@@ -1,10 +1,13 @@
 import threading
+import sys
+import signal
 
 from flask import Flask, request
 
 from arch.classic import Strategy
 from modules.web_core import WebCore
 from modules.logger import *
+from modules.config import *
 
 
 app = Flask(__name__)
@@ -53,5 +56,14 @@ def stop_strat():
         return e
 
 
+def handle_interrupt(signum, frame):
+    strats = read_strategies()
+    for strat in strats:
+        change_strat(strat['name'], status = 'off')
+    print("Программа завершена пользователем.")
+    sys.exit(1)
+
+
 if __name__ == '__main__':
+    signal.signal(signal.SIGINT, handle_interrupt)
     app.run(debug=True, port=5002)

@@ -6,9 +6,9 @@ from modules.db import DealsDataBase
 
 
 class Metrics:
-    def __init__(self, flag = '1', db_name='test'):
+    def __init__(self, db_name='test'):
         # Класс для просчета метрик работы бота
-        self.trade = okxTrade(flag)
+        self.trade = okxTrade()
         self.deals_db = DealsDataBase(db_name)
 
 

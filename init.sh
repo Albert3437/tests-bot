@@ -1,3 +1,4 @@
+cd ..
 sudo dnf update -y
 sudo dnf install gcc gcc-c++ make python3-devel -y
 sudo dnf install tmux -y
@@ -8,5 +9,5 @@ cd ta-lib
 ./configure --prefix=/usr
 make
 sudo make install
-cd ..
+cd tests-bot
 pip install -r requirements.txt

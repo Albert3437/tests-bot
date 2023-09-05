@@ -2,10 +2,11 @@ from time import sleep, time
 
 from modules.kline_collector import BinanceData
 from modules.indicators import TechnicalIndicators
-from modules.config import read_some_strat
+from modules.config import *
 from modules.logger import logging, logger
 from modules.trading_engine import TradingEngine
 from configs.config import INDICATOR_DICT, INTERVALS_DICT
+
 
 class Strategy:
     def __init__(self, strat_name):
@@ -26,6 +27,7 @@ class Strategy:
     def timing_handler(self, timestamp, interval):
         # Работа с таймингами для свечей
         interval_in_seconds = INTERVALS_DICT[interval]
+        change_strat(self.strategy['name'], timing_status = time())
         interval_in_seconds += .5
         sleep_time = interval_in_seconds - (time() - timestamp / 1000)
         if sleep_time<=0:
