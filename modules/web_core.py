@@ -208,7 +208,7 @@ class WebCore:
 
 
     @logging
-    def logger_data(self) -> pd.DataFrame:
+    def logger_df(self) -> pd.DataFrame:
         # Получение датафрейма с записями логера
         with open('debug.log', 'r') as f:
             data = f.readlines()
@@ -254,9 +254,16 @@ class WebCore:
         self.trade.account_mode()
 
 
+    @logging
     def logger_data(self):
         # Функция для получения данных из файла логера
         filename = "debug.log"
         with open(filename, "rb") as f:
             data = f.read().decode("utf-8")
         return data
+    
+
+    @logging
+    def convert_df(self, df:pd.DataFrame):
+        # Функция для кодироавния данных датафрейма для будущего скачивания
+        return df.to_csv().encode('utf-8')

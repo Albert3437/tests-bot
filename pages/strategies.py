@@ -58,8 +58,8 @@ if col1.button('ON/OFF'):
     result = web_core.activate_button()
     st.toast(result)
 
-if col1.button('Скачать базу данных'):
-    pass
+csv_data = web_core.convert_df(web_core.deals_df())
+col1.download_button(label="Скачать бд сделок", data=csv_data, file_name=f'{strat_name}.csv', mime='text/csv',)
 
 if col1.button('Очистить базу данных'):
     result = web_core.clear_db()
