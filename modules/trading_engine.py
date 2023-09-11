@@ -62,6 +62,7 @@ class TradingEngine:
         # Функция прокладка для открытия сделки
         side_types = {'long':{'open':'buy', 'close':'sell'}, 'short':{'open':'sell', 'close':'buy'}}
         deal_result = self.trade.open_pos(token, self.summ(), side, price, side=side_types[side][act_type], ordType=ordType)
+        logger.info(deal_result)
         return deal_result
 
 
@@ -90,6 +91,8 @@ class TradingEngine:
                     self.trade.cancel_order(token, order_id)
                 order_status = self.trade.last_order(token, order_id)['data'][0]['state']
                 return deal_result, order_status
+        else:
+            return deal_result
 
 
     @logging
@@ -106,7 +109,10 @@ class TradingEngine:
         else:
             percent, close_price, _, fee = self.close_data()
             self.deals_db.close_deal(timestamp, close_price, percent, fee)
-            change_strat(self.strat_name, balance = balance*percent-fee)
+            try:
+                change_strat(self.strat_name, balance = balance*percent-fee)
+            except:
+                logger.error('close_deal')
         return close_result
 
 
@@ -124,7 +130,6 @@ class TradingEngine:
             order_id = deal_result['data'][0]['ordId']
             _, _, open_price, _ = self.close_data()
             self.deals_db.open_deal(order_id, timestamp, open_price, side, status)
-            logger.info(deal_result)
             return deal_result
 
 
