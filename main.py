@@ -4,7 +4,12 @@ from pyngrok import ngrok
 from modules.config import read_API
 from modules.telegram import Telegram
 from modules.config import init_settings
+from modules.web_core import WebCore
 
+
+web_core = WebCore()
+
+web_core.set_default_trade_settings()
 init_settings()
 tele = Telegram()
 

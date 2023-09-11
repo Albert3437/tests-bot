@@ -19,14 +19,9 @@ class WebCore:
         # Грубо говоря это бекенд для веб приложения
         self.strat_name = strat_name
         flag = str(DEMO_MODE)
-        strats = read_strategies()
-        for strat in strats:
-            if strat_name == strat['name']:
-                flag = str(strat['demo_mode'])
         self.metric = Metrics(strat_name)
         self.deals_db = DealsDataBase(strat_name)
         self.trade = okxTrade(flag)
-        self.threads = {}
 
 
     @logging
@@ -243,8 +238,25 @@ class WebCore:
 
     @logging
     def work_status(self):
+        # Функция которая возвращает булевое значение состояния работы стратегии
         strat = read_some_strat(self.strat_name)
         diff = time.time() - strat['timing_status']
         interval = INTERVALS_DICT[strat['interval']] * 1.5
 
         return diff<interval
+    
+
+    @logging
+    def set_default_trade_settings(self):
+    # Функция которая позволяет провести предварительную настройку биржи
+        for token in TOKEN_LIST:
+            self.trade.set_leverage(token, 1)
+        self.trade.account_mode()
+
+
+    def logger_data(self):
+        # Функция для получения данных из файла логера
+        filename = "debug.log"
+        with open(filename, "rb") as f:
+            data = f.read().decode("utf-8")
+        return data

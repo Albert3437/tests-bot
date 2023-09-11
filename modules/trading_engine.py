@@ -7,7 +7,7 @@ from modules.config import *
 from modules.db import *
 from modules.market_connector import okxTrade
 from modules.logger import logging, logger
-from configs.config import FEES, INTERVALS_DICT, COEF
+from configs.config import *
 # надо розобраться с ошибкой при закрытии позиций
 # Сделать правильное указание цены
 # Сделать проверку на закрытую сделку
@@ -61,7 +61,7 @@ class TradingEngine:
     def place_order(self, token:str, price:float, side:str, act_type:str, ordType:str):
         # Функция прокладка для открытия сделки
         side_types = {'long':{'open':'buy', 'close':'sell'}, 'short':{'open':'sell', 'close':'buy'}}
-        deal_result = self.trade.open_pos(token, self.summ(), side, price,  side=side_types[side][act_type], ordType=ordType)
+        deal_result = self.trade.open_pos(token, self.summ(), side, price, side=side_types[side][act_type], ordType=ordType)
         return deal_result
 
 

@@ -1,4 +1,5 @@
 import streamlit as st
+import base64
 
 from modules.web_core import WebCore
 from modules.config import api_write
@@ -20,6 +21,12 @@ if col1.button('Отключить все стратегии'):
 
 if col1.button('Очистить логер'):
     web_core.clear_logger()
+
+data = web_core.logger_data()
+col1.download_button(label="Скачать логер", data=data, file_name="debug.log")
+
+if col1.button('Настроить биржу'):
+    web_core.set_default_trade_settings()
 
 
 col2.header('Блок API')

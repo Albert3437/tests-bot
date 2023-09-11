@@ -5,7 +5,7 @@ import okx.MarketData as Market
 import okx.Account as Account
 import okx.Trade as Trade
 
-from modules.logger import logging
+from modules.logger import *
 from configs.config import *
 
 
@@ -52,6 +52,7 @@ class okxTrade:
         # Открытие лонговой сделки по маркет цене
         for _ in range(5):
             try:
+                logger.info(posSide)
                 result = self.tradeAPI.place_order(
                     instId=f"{token}-USDT-SWAP",
                     tdMode="cross",
@@ -112,8 +113,8 @@ class okxTrade:
     def set_leverage(self, symbol, leverage):
         # Установка плечей, в okx она находится отдельно
         result = self.accountAPI.set_leverage(
-            instId = symbol, # Set symbol Example: "ETH-USDT-SWAP"
-            lever = leverage, # Set leverage Example: "1"
+            instId = f"{symbol}-USDT-SWAP", # Set symbol Example: "ETH-USDT-SWAP"
+            lever = str(leverage), # Set leverage Example: "1"
             mgnMode = "cross", # margin mode 
         )
         return result
@@ -192,3 +193,10 @@ class okxTrade:
             except Exception as e:
                 time.sleep(5)
         return 1
+    
+
+    @logging
+    def account_mode(self, posMode = "long_short_mode"):
+        result = self.accountAPI.set_position_mode(
+        posMode = posMode )
+        return result
