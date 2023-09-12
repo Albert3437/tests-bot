@@ -8,7 +8,7 @@ from modules.db import *
 from modules.market_connector import okxTrade
 from modules.logger import logging, logger
 from configs.config import *
-# надо розобраться с ошибкой при закрытии позиций
+# Надо розобраться с ошибкой при закрытии позиций
 # Сделать правильное указание цены
 # Сделать проверку на закрытую сделку
 
@@ -29,7 +29,8 @@ class TradingEngine:
         strat = read_some_strat(self.strat_name)
         amount, token = strat['balance'], strat['token']
         actual_price = self.trade.actual_price(token)
-        amount = amount/actual_price * COEF[token]
+        amount = amount/actual_price / self.trade.value_coef(token)
+        logger.info(amount)
         return math.ceil(amount)
 
 

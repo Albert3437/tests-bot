@@ -4,6 +4,8 @@ import time
 import okx.MarketData as Market
 import okx.Account as Account
 import okx.Trade as Trade
+import okx.PublicData as PublicData
+
 
 from modules.logger import *
 from configs.config import *
@@ -11,17 +13,19 @@ from configs.config import *
 
 # У всех функция прописан функционал повторных запросов на сервер при ошибке через бесконечный цикл
 class okxTrade:
-    def __init__(self, flag=str(DEMO_MODE)):
+    def __init__(self, flag=DEMO_MODE):
         # Класс для работы с АПИ биржи ОКХ
         with open('configs/API.json', 'r') as f:
             keys = json.load(f)
-        mode = 'DEMO' if DEMO_MODE else 'REAL'
+        flag = str(flag)
+        mode = 'DEMO' if bool(int(flag)) else 'REAL'
         API_KEY = keys[f'{mode}_OKX_API_KEY']
         SECRET = keys[f'{mode}_OKX_SECRET']
         PASSPHRAZE = keys[f'{mode}_OKX_PASSPHRAZE']
         self.tradeAPI = Trade.TradeAPI(API_KEY, SECRET, PASSPHRAZE, False, flag)
         self.accountAPI = Account.AccountAPI(API_KEY, SECRET, PASSPHRAZE, False, flag)
         self.marketAPI = Market.MarketAPI(API_KEY, SECRET, PASSPHRAZE, False, flag)
+        self.publicDataAPI = PublicData.PublicAPI(flag = flag)
 
 
     @logging
@@ -52,7 +56,6 @@ class okxTrade:
         # Открытие лонговой сделки по маркет цене
         for _ in range(5):
             try:
-                logger.info(posSide)
                 result = self.tradeAPI.place_order(
                     instId=f"{token}-USDT-SWAP",
                     tdMode="cross",
@@ -200,3 +203,11 @@ class okxTrade:
         result = self.accountAPI.set_position_mode(
         posMode = posMode )
         return result
+    
+
+    @logging
+    def value_coef(self, token):
+        result = self.publicDataAPI.get_instruments(instType = "SWAP")['data']
+        for res in result:
+            if f'{token}-USDT-SWAP' == res['instId']:
+                return float(res['ctVal'])
