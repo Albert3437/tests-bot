@@ -1,6 +1,6 @@
 # Это файл с перечеслением в нем всех возможных параметров, используется для конфигуратора в веб приложении
 
-DEMO_MODE = 1
+DEMO_MODE = 0
 START_BALANCE = 507
 TOKEN_LIST = ['DOGE', 'SOL', 'DOT', 'AVAX', 'ADA', 'BTC', 'LTC', 'ETH', 'TRX']
 COEF = {'DOGE':0.1, 'SOL':10, 'DOT':10, 'AVAX':10, 'ADA':1, 'BTC':1000, 'LTC':1000, 'ETH':100, 'TRX':0.001}
