@@ -94,7 +94,8 @@ def add_new_strat(name:str, indicator_list:list, interval:str, arch:str, strat_t
             "timing_status":timing_status
             }
     save_dump(f'configs/strategies/{name}.json', strat)
-    strat_names.append(name)
+    if name not in strat_names:
+        strat_names.append(name)
     change_config(STRATS = strat_names)
 
 
@@ -105,6 +106,12 @@ def change_strat(strat_name, **kwargs):
     for key, value in kwargs.items():
         if value:
             strat[key] = value
+        if key == 'name':
+            strat_names = read_strat_names()
+            strat_names[strat_names.index(strat_name)] = value
+            change_config(STRATS = strat_names)
+            os.remove(f'configs/strategies/{strat_name}.json')
+            strat_name = value
     save_dump(f'configs/strategies/{strat_name}.json', strat)
 
 

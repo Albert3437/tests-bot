@@ -14,7 +14,7 @@ from modules.kline_collector import BinanceData
 
 
 class WebCore:
-    def __init__(self, strat_name = 'classic'):
+    def __init__(self, strat_name = 'test'):
         # Грубо говоря это бекенд для веб приложения
         self.strat_name = strat_name
         flag = str(DEMO_MODE)

@@ -5,6 +5,7 @@ configs/API.json
 absolut.db
 debug.log
 configs/strategies/
+configs/config.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
