@@ -7,7 +7,6 @@ from modules.config import *
 from modules.db import *
 from modules.market_connector import okxTrade
 from modules.logger import logging, logger
-from configs.config import *
 # Надо розобраться с ошибкой при закрытии позиций
 # Сделать правильное указание цены
 # Сделать проверку на закрытую сделку

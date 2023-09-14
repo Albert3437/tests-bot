@@ -1,44 +1,54 @@
+import os
 import json
-
-from modules.metrics import *
+from modules.logger import *
+#from modules.metrics import *
 
 
 
 @logging
-def init_settings():
-    # Функция проверки на наличие конфигурационного файла стратегий
-    try:
-        with open('configs/strategies.json', 'r') as f:
-            json.load(f)
-    except FileNotFoundError:
-            with open('configs/strategies.json', 'w') as f:
-                json.dump([],f)
+def init_strats():
+    folder_path = 'configs/strategies'
+
+    # Проверяем, существует ли папка, и если нет, то создаем её
+    if not os.path.exists(folder_path):
+        os.mkdir(folder_path)
+    else:
+        pass
 
 
 def read(filepath):
     # Чтение json файла
     with open(filepath, 'r') as f:
         file = json.load(f)
-        return file
+    return file
+
+
+@logging
+def read_config():
+    return read('configs/config.json')
+
+
+@logging
+def read_strat_names():
+    cfg = read_config()
+    strat_names = cfg['STRATS']
+    return strat_names
 
 
 @logging
 def read_strategies():
-    # Чтение файла стратегий
-    return read('configs/strategies.json')
+    strats = []
+    strat_names = read_strat_names()
+    for name in strat_names:
+        strat = read(f'configs/strategies/{name}.json')
+        strats.append(strat)
+    return strats
 
 
 @logging
 def read_some_strat(strat_name):
     # Чтение определенной стратегии
-    strats = read_strategies()
-    for strat in strats:
-        if strat['name'] == strat_name:
-            if strat['stop_loss'] == 'None':
-                strat['stop_loss'] = 0
-            if strat['take_profit'] == 'None':
-                strat['take_profit'] = 0
-            return strat
+    return read(f'configs/strategies/{strat_name}.json')
 
 
 @logging
@@ -56,10 +66,19 @@ def save_dump(filename, data):
 
 
 @logging
-def add_new_strat(name:str, indicator_list:list, interval:str, arch:str, strat_type:str, balance:int, token:str, demo_mode:bool=True, status:int=None, *, leverage:int=1, stop_loss:float=None, take_profit:float=None):
+def change_config(**kwargs):
+    print(kwargs)
+    cfg = read_config()
+    for key, value in kwargs.items():
+        cfg[key] = value
+    save_dump('configs/config.json', cfg)
+
+
+@logging
+def add_new_strat(name:str, indicator_list:list, interval:str, arch:str, strat_type:str, balance:int, token:str, demo_mode:bool=True, status:int=None, *, leverage:int=1, stop_loss:float=None, take_profit:float=None, timing_status:float=None):
     # Добавление новой стратегии
-    strats = read_strategies()
-    strats.append({
+    strat_names = read_strat_names()
+    strat = {
             "name":name,
             "indicator_list":indicator_list,
             "demo_mode":demo_mode,
@@ -71,31 +90,35 @@ def add_new_strat(name:str, indicator_list:list, interval:str, arch:str, strat_t
             "take_profit":take_profit,
             "balance":balance,
             "interval":interval,
-            "token":token
-            })
-    save_dump('configs/strategies.json', strats)
+            "token":token,
+            "timing_status":timing_status
+            }
+    save_dump(f'configs/strategies/{name}.json', strat)
+    strat_names.append(name)
+    change_config(STRATS = strat_names)
 
 
 @logging
 def change_strat(strat_name, **kwargs):
     # Изменение определенной стратегии
-    strats = read_strategies()
-    for strat in strats:
-        if strat['name'] == strat_name:
-            for key, value in kwargs.items():
-                if value != None:
-                    strat[key] = value
-    save_dump('configs/strategies.json', strats)
+    strat = read_some_strat(strat_name)
+    for key, value in kwargs.items():
+        if value:
+            strat[key] = value
+    save_dump(f'configs/strategies/{strat_name}.json', strat)
 
 
 @logging
 def remove_strat(strat_name):
     # Удаление определенной стратегии
-    strats = read_strategies()
-    for strat in strats:
-        if strat['name'] == strat_name:
-            strats.remove(strat)
-    save_dump('configs/strategies.json', strats)
+    file_path = f'configs/strategies/{strat_name}.json'
+    if os.path.exists(file_path):
+        strat_names = read_strat_names()
+        os.remove(file_path)
+        strat_names.remove(strat_name)
+        change_config(STRATS = strat_names)
+    else:
+        pass
 
 
 @logging
@@ -106,3 +129,17 @@ def api_write(**kwargs):
         if value != None:
             api[key] = value
     save_dump('configs/API.json', api)
+
+cfg = read_config()
+DEMO_MODE = cfg['DEMO_MODE']
+START_BALANCE = cfg['START_BALANCE']
+TOKEN_LIST = cfg['TOKEN_LIST']
+COEF = cfg['COEF']
+INDICATOR_LIST = cfg['INDICATOR_LIST']
+INTERVALS = cfg['INTERVALS']
+ARCH_LIST = cfg['ARCH_LIST']
+ARCH_TYPE = cfg['ARCH_TYPE']
+INTERVALS_DICT = cfg['INTERVALS_DICT']
+INDICATOR_DICT = cfg['INDICATOR_DICT']
+FEES = cfg['FEES']
+STRATS = cfg['STRATS']

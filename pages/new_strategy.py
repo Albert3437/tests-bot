@@ -2,7 +2,7 @@ import streamlit as st
 
 from modules.config import add_new_strat
 from modules.db import DealsDataBase
-from configs.config import *
+from modules.config import *
 
 
 st.set_page_config(layout='centered')

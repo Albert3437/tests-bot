@@ -2,7 +2,7 @@ import streamlit as st
 
 from modules.web_core import WebCore
 from modules.metrics import Metrics
-from configs.config import *
+from modules.config import *
 
 st.set_page_config(layout='wide')
 

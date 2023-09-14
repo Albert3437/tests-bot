@@ -5,7 +5,7 @@ import telebot
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 
 from modules.logger import logging
-from modules.config import read_API, read_strategies
+from modules.config import *
 from modules.metrics import Metrics
 
 

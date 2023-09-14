@@ -7,7 +7,6 @@ from modules.trading_engine import TradingEngine
 from modules.logger import logging, logger
 from modules.metrics import Metrics
 from modules.config import *
-from configs.config import * 
 from modules.db import DealsDataBase
 from modules.market_connector import okxTrade
 from modules.kline_collector import BinanceData

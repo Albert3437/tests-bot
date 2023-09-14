@@ -5,7 +5,6 @@ from modules.indicators import TechnicalIndicators
 from modules.config import *
 from modules.logger import *
 from modules.trading_engine import TradingEngine
-from configs.config import INDICATOR_DICT, INTERVALS_DICT
 
 
 class Strategy:

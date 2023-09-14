@@ -14,7 +14,7 @@ class TechnicalIndicators:
     
     
     @logging
-    def moving_average(self, window=20):      
+    def MA(self, window=20):      
         self.df['SMA'] = talib.SMA(self.df['close'], timeperiod=window)
         self.df['SMA_50'] = talib.SMA(self.df['close'], timeperiod=50)
         self.df['SMA_200'] = talib.SMA(self.df['close'], timeperiod=200)
@@ -25,7 +25,7 @@ class TechnicalIndicators:
     
 
     @logging
-    def relative_strength_index(self, window=14):
+    def RSI(self, window=14):
         self.df['RSI'] = talib.RSI(self.df['close'], timeperiod=window)
         self.df['RSI signal'] = 0
         self.df.loc[self.df['RSI'] > 70, 'RSI signal'] = -1
@@ -45,7 +45,7 @@ class TechnicalIndicators:
     
 
     @logging
-    def bollinger_bands(self, window=20, num_std=2):
+    def bollinger(self, window=20, num_std=2):
         upper_band, middle_band, lower_band = talib.BBANDS(self.df['close'], timeperiod=window, nbdevup=num_std, nbdevdn=num_std)
         self.df['Upper Band'] = upper_band
         self.df['Middle Band'] = middle_band
@@ -57,7 +57,7 @@ class TechnicalIndicators:
     
 
     @logging
-    def stochastic_oscillator(self, window=14):
+    def stochastic(self, window=14):
         slowk, slowd = talib.STOCH(self.df['high'], self.df['low'], self.df['close'], fastk_period=window, slowk_period=window, slowd_period=window)
         self.df['SlowK'] = slowk
         self.df['SlowD'] = slowd
@@ -68,7 +68,7 @@ class TechnicalIndicators:
     
 
     @logging
-    def average_directional_index(self, window=14):
+    def ADI(self, window=14):
         self.df['ADX'] = talib.ADX(self.df['high'], self.df['low'], self.df['close'], timeperiod=window)
         self.df['ADX signal'] = 0
         self.df.loc[self.df['ADX'] > 25, 'ADX signal'] = 1
@@ -77,7 +77,7 @@ class TechnicalIndicators:
     
 
     @logging
-    def calculate_ichimoku_cloud(self, conversion_period=9, base_period=26, leading_span_period=52, lagging_span_period=26):
+    def ichimoku(self, conversion_period=9, base_period=26, leading_span_period=52, lagging_span_period=26):
         
         # Вычисление линий Облака Ишимоку
         high_prices = self.df["high"]
@@ -95,7 +95,7 @@ class TechnicalIndicators:
     
 
     @logging
-    def parabolic_sar(self):
+    def PSAR(self):
         self.df['SAR'] = talib.SAR(self.df['high'], self.df['low'])
         self.df['SAR signal'] = 0
         self.df.loc[self.df['close'] > self.df['SAR'], 'SAR signal'] = 1
@@ -104,7 +104,7 @@ class TechnicalIndicators:
     
 
     @logging
-    def on_balance_volume(self):
+    def OBV(self):
         self.df['OBV'] = talib.OBV(self.df['close'], self.df['volume'])
         self.df['OBV signal'] = 0
         self.df.loc[self.df['OBV'] > 0, 'OBV signal'] = 1
@@ -113,7 +113,7 @@ class TechnicalIndicators:
     
 
     @logging
-    def calculate_momentum_system(self, window=14, threshold=0):
+    def momentum(self, window=14, threshold=0):
         momentum = talib.MOM(self.df['close'], timeperiod=window)
         self.df['Momentum'] = momentum
         self.df['Momentum signal'] = 0  # Инициализируем столбец 'Signal' нулями
@@ -126,7 +126,7 @@ class TechnicalIndicators:
 
 
     @logging
-    def chaikin_money_flow(self, window=20):
+    def CMF(self, window=20):
         self.df['CMF'] = talib.ADOSC(self.df['high'], self.df['low'], self.df['close'], self.df['volume'], fastperiod=3, slowperiod=10)
         self.df['CMF signal'] = 0
         self.df.loc[self.df['CMF'] > 0, 'CMF signal'] = 1
@@ -135,7 +135,7 @@ class TechnicalIndicators:
     
 
     @logging
-    def williams_percent_range(self, window=14):
+    def WPR(self, window=14):
         wpr = talib.WILLR(self.df['high'], self.df['low'], self.df['close'], timeperiod=window)
         self.df['WPR'] = wpr
         self.df['WPR signal'] = 0
@@ -145,7 +145,7 @@ class TechnicalIndicators:
     
 
     @logging
-    def commodity_channel_index(self, window=20):
+    def CCI(self, window=20):
         self.df['CCI'] = talib.CCI(self.df['high'], self.df['low'], self.df['close'], timeperiod=window)
         self.df['CCI signal'] = 0
         self.df.loc[self.df['CCI'] > 100, 'CCI signal'] = -1
@@ -154,7 +154,7 @@ class TechnicalIndicators:
 
 
     @logging
-    def rate_of_change(self, window=12):
+    def ROC(self, window=12):
         self.df['ROC'] = talib.ROC(self.df['close'], timeperiod=window)
         self.df['ROC signal'] = 0
         self.df.loc[self.df['ROC'] > 5, 'ROC signal'] = 1

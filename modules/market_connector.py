@@ -8,8 +8,7 @@ import okx.PublicData as PublicData
 
 
 from modules.logger import *
-from configs.config import *
-
+from modules.config import *
 
 # У всех функция прописан функционал повторных запросов на сервер при ошибке через бесконечный цикл
 class okxTrade:

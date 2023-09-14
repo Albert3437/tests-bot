@@ -1,5 +1,4 @@
 import streamlit as st
-import base64
 
 from modules.web_core import WebCore
 from modules.config import api_write
