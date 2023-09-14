@@ -78,7 +78,7 @@ def change_config(**kwargs):
 
 
 @logging
-def add_new_strat(name:str, indicator_list:list, interval:str, arch:str, strat_type:str, balance:int, token:str, demo_mode:bool=True, status:int=None, *, leverage:int=1, stop_loss:float=None, take_profit:float=None, timing_status:float=None):
+def add_new_strat(name:str, indicator_list:list, interval:str, arch:str, strat_type:str, balance:int, token:str, demo_mode:bool=True, status:int=None, *, leverage:int=1, stop_loss:float=None, take_profit:float=None, timing_status:float=0):
     # Добавление новой стратегии
     strat_names = read_strat_names()
     strat = {
