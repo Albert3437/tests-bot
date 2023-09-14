@@ -5,15 +5,18 @@ from modules.logger import *
 
 
 
-@logging
-def init_strats():
-    folder_path = 'configs/strategies'
 
-    # Проверяем, существует ли папка, и если нет, то создаем её
-    if not os.path.exists(folder_path):
-        os.mkdir(folder_path)
-    else:
-        pass
+file_path = 'configs/config.json'
+folder_path = 'configs/strategies/'
+if not os.path.exists(folder_path):
+    os.mkdir(folder_path)
+else:
+    pass
+if not os.path.exists(file_path):
+    with open(file_path, 'w') as f:
+        data = {"DEMO_MODE": 0, "START_BALANCE": 507, "TOKEN_LIST": ["DOGE", "SOL", "DOT", "AVAX", "ADA", "BTC", "LTC", "ETH", "TRX"], "COEF": {"DOGE": 0.1, "SOL": 10, "DOT": 10, "AVAX": 10, "ADA": 1, "BTC": 1000, "LTC": 1000, "ETH": 100, "TRX": 0.001}, "INDICATOR_LIST": ["ADX", "Bollinger", "CCI", "CMF", "Ichimoku", "MACD", "Momentum", "OBV", "SAR", "ROC", "RSI", "SMA", "Stochastic", "WPR", "TR", "ATR", "AD", "AA", "TS", "DM", "PPO", "PPOP", "TSI", "RS", "ADO", "MFI"], "INTERVALS": ["1m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "12h"], "ARCH_LIST": ["classic", "classic reverse"], "ARCH_TYPE": ["classic", "all signals"], "INTERVALS_DICT": {"1m": 60, "5m": 300, "15m": 900, "30m": 1800, "1h": 3600, "2h": 7200, "4h": 14400, "6h": 21600, "12h": 43200}, "INDICATOR_DICT": {"ADX": "ta.ADI()", "Bollinger": "ta.bollinger()", "CCI": "ta.CCI()", "CMF": "ta.CMF()", "Ichimoku": "ta.ichimoku()", "MACD": "ta.macd()", "Momentum": "ta.momentum()", "OBV": "ta.OBV()", "SAR": "ta.PSAR()", "ROC": "ta.ROC()", "RSI": "ta.RSI()", "SMA": "ta.MA()", "Stochastic": "ta.stochastic()", "WPR": "ta.WPR()", "TR": "ta.TR()", "ATR": "ta.ATR()", "AD": "ta.AD()", "AA": "ta.AA()", "TS": "ta.TS()", "DM": "ta.DM()", "PPO": "ta.PPO()", "PPOP": "ta.PPOP()", "TSI": "ta.TSI()", "RS": "ta.RS()", "ADO": "ta.ADO()", "MFI": "ta.MFI()"}, "FEES": 0.0005, "STRATS": []}
+        json.dump(data,f)
+
 
 
 def read(filepath):
@@ -62,7 +65,7 @@ def save_dump(filename, data):
     # Сохранение произвольного файла json
     with open(filename, 'w') as f:
         file = json.dump(data,f)
-        return file
+    return file
 
 
 @logging
