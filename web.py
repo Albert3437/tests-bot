@@ -26,8 +26,11 @@ col1, col2 = st.columns(2)
 col1.subheader('График общего баланса')
 col1.line_chart(web_core.get_balance_list())
 
-col2.subheader('Люгер')
-col2.dataframe(web_core.logger_df())
+col2.subheader('Активные сделки')
+col2.dataframe(web_core.get_active_deals())
+
+st.subheader('Люгер')
+st.dataframe(web_core.logger_df())
 
 st.subheader('Котировки')
 token = str(st.selectbox('Выбор токена', TOKEN_LIST))
