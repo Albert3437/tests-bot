@@ -191,7 +191,9 @@ class WebCore:
             strat['deals_number'] = deals_number
             strat['profit_deals_number'] = profit_deals_number
             strat['total_fee'] = total_fee
-        return pd.DataFrame(strats)
+        df = pd.DataFrame(strats)
+        df['timing_status'] = pd.to_datetime(df['timing_status'], unit='s')
+        return df
 
 
     def write_api(self, NGROK_TOKEN, TELE_API, CHAT_ID, OKX_API_KEY, OKX_SECRET, OKX_PASSPHRAZE):
