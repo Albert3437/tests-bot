@@ -236,8 +236,10 @@ class WebCore:
     
 
     @logging
-    def work_status(self):
+    def work_status(self, strat_name=None):
         # Функция которая возвращает булевое значение состояния работы стратегии
+        if strat_name == None:
+            strat_name = self.strat_name
         strat = read_some_strat(self.strat_name)
         diff = time.time() - strat['timing_status']
         interval = INTERVALS_DICT[strat['interval']] * 1.5
