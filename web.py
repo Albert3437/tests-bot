@@ -54,7 +54,7 @@ for strat_name in STRATS:
     else:
         col1_2.error('Выключенa')
 
-    if web_core.work_status():
+    if web_core.work_status(strat_name):
         col2_2.success('В порядке')
     elif strat['status'] == 'off':
         col2_2.error('Выключенa')
