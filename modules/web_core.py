@@ -267,12 +267,14 @@ class WebCore:
         # Функция для кодироавния данных датафрейма для будущего скачивания
         return df.to_csv().encode('utf-8')
     
+
     @logging
     def get_active_deals(self):
         active_deals = []
         for strat in STRATS:
             try:
-                data = self.db.read_deals(strat)
+                db = DealsDataBase(strat)
+                data = db.read_deals(strat)
                 if data[-1]['percent'] == None:
                     active_deals.append(data[-1])
             except:
