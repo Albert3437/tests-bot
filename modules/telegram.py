@@ -36,7 +36,7 @@ class Telegram:
         # Отправка уведомления в чат
         web_core = WebCore()
         total_balance, profit_percent = web_core.get_total_balance()
-        message = f'Баланс: {round(total_balance,2)}$\nПроцент дохода за день: {profit_percent}%'
+        message = f'Баланс: {round(total_balance,2)}$\nПроцент дохода: {profit_percent}%'
         self.message(message)
             
 
