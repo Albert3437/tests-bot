@@ -6,7 +6,7 @@ from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 
 from modules.logger import logging
 from modules.config import *
-from modules.metrics import Metrics
+from modules.web_core import WebCore
 
 
 class Telegram:
@@ -34,8 +34,9 @@ class Telegram:
     @logging
     def send_notification(self):
         # Отправка уведомления в чат
-        metric = Metrics()
-        message = f'Баланс: {round(metric.total_balance(),2)}$\nПроцент дохода за день: {metric.profit_percent_per_day()}%'
+        web_core = WebCore()
+        total_balance, profit_percent = web_core.get_total_balance()
+        message = f'Баланс: {round(total_balance,2)}$\nПроцент дохода за день: {profit_percent}%'
         self.message(message)
             
 
