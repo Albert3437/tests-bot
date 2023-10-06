@@ -37,6 +37,10 @@ class Telegram:
         web_core = WebCore()
         total_balance, profit_percent = web_core.get_total_balance()
         message = f'Баланс: {round(total_balance,2)}$\nПроцент дохода: {profit_percent}%'
+        message += f'\n\nСостояние стратегий:'
+        for strat_name in STRATS:
+            message += f'\n{strat_name}: {"В норме" if web_core.work_status(strat_name) else "Ошибка"}'
+        logger.info(message)
         self.message(message)
             
 
@@ -72,11 +76,13 @@ class Telegram:
 
     @logging
     def telegram_notification(self):
-    # Запуск телеграмм оповещений, при надобности можно добавить любое количество
-            schedule.every().day.at("11:00").do(self.send_notification)
-            schedule.every().day.at("20:00").do(self.send_notification)
-            while True:
-                    schedule.run_pending()
-                    time.sleep(1)
+        # Запуск телеграмм оповещений, при надобности можно добавить любое количество
+        cfg = read_config()
+
+        for task_time in cfg['TASKS']:
+            schedule.every().day.at(task_time).do(self.send_notification)
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
 
     

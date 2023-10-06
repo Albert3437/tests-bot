@@ -45,10 +45,9 @@ class TradingEngine:
     @logging
     def close_data(self):
         # Функция получения данных по закрытию сделки
-        balance = read_some_strat(self.strat_name)['balance']
         try:
             r = self.trade.position_list_history()[0]
-            percent = (1 + float(r['pnl']) / balance)
+            percent = 1 + float(r['pnlRatio'])
             close_price = float(r['closeAvgPx'])
             open_price = float(r['openAvgPx'])
             fee = (float(r['closeTotalPos']) * float(r['closeAvgPx']) * FEES)

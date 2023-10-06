@@ -5,7 +5,6 @@ import signal
 from flask import Flask, request
 
 from arch.classic import Strategy
-from modules.web_core import WebCore
 from modules.logger import *
 from modules.config import *
 
@@ -64,6 +63,14 @@ def handle_interrupt(signum, frame):
     sys.exit(1)
 
 
+def start_handler():
+    for strat_name in STRATS:
+        strat = read_some_strat(strat_name)
+        if strat['status'] == 'on':
+            start_strategy(strat_name)
+
+
 if __name__ == '__main__':
+    start_handler()
     signal.signal(signal.SIGINT, handle_interrupt)
     app.run(debug=True, port=5002)

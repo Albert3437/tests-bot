@@ -1,7 +1,7 @@
 import streamlit as st
 
 from modules.web_core import WebCore
-from modules.config import api_write
+from modules.config import api_write, read_config, change_config
 
 
 web_core=WebCore()
@@ -29,7 +29,7 @@ if col1.button('Настроить биржу'):
 
 
 col2.header('Блок API')
-with col2.form('db_form'):
+with col2.form('API_form'):
     # Функция сохранения АПИ ключей в конфиг
     TELE_API = st.text_input('Введите АПИ Телеграмм бота')
     CHAT_ID = st.text_input('Введите Ваш айди Телеграмм')
@@ -49,3 +49,13 @@ with col2.form('db_form'):
 
 
 
+col1.header('Блок конфигуратора')
+cfg = read_config()
+with col1.form('cfg_form'):
+    DEMO_MODE = int(st.checkbox("Демо", value=cfg['DEMO_MODE']))
+    START_BALANCE = st.number_input('Стартовый баланс', value=cfg['START_BALANCE'])
+    TOKEN_LIST = st.text_area('Список возможных токенов', value=str(cfg['TOKEN_LIST'])[1:-1].replace("'", '')).split(", ")
+    FEES = st.number_input('Процент комисии', max_value=1.0, value=cfg['FEES']*100)/100
+    TASKS = st.text_input('Времена для оповещения', value=str(cfg['TASKS'])[1:-1].replace("'", '')).split(", ")
+    if st.form_submit_button('Сохранить'):
+        change_config(DEMO_MODE=DEMO_MODE, START_BALANCE=START_BALANCE, TOKEN_LIST=TOKEN_LIST, FEES=FEES, TASKS=TASKS)

@@ -275,12 +275,14 @@ class WebCore:
     @logging
     def get_active_deals(self):
         active_deals = []
-        for strat in STRATS:
+        for strat_name in STRATS:
             try:
-                db = DealsDataBase(strat)
-                data = db.read_deals(strat)
+                db = DealsDataBase(strat_name)
+                data = db.read_deals(strat_name)
                 if data[-1]['percent'] == None:
-                    active_deals.append(data[-1])
+                    deal = data[-1]
+                    deal['strat_name'] = strat_name
+                    active_deals.append(deal)
             except:
                 pass
         return pd.DataFrame(active_deals)

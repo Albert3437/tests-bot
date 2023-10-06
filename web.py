@@ -34,18 +34,11 @@ col2.dataframe(web_core.get_active_deals(), height=340)
 col2.subheader('Люгер')
 col2.dataframe(web_core.logger_df())
 
-col1.subheader('Данные по стратегиям')
+col1.subheader('Состояние стратегий')
 for strat_name in STRATS:
     
     col1.subheader(strat_name)
-    balance_amount, profit_percent = web_core.balance(strat_name)
-    deals_number, profit_deals_percent = web_core.number_of_deals(strat_name)
-    total_fee = web_core.get_total_fees(strat_name)
 
-    col1_1, col2_1, col3_1 = col1.columns(3)
-    col1_1.metric('Balance', f'{balance_amount} $', f'{profit_percent} %')
-    col2_1.metric('Deals', deals_number, f'{profit_deals_percent} %')
-    col3_1.metric('Fee`s', f'{total_fee} $')
     strat = read_some_strat(strat_name)
     
     col1_2, col2_2 = col1.columns(2)
