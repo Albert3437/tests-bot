@@ -65,7 +65,7 @@ class TradingEngine:
         side_types = {'long':{'open':'buy', 'close':'sell'}, 'short':{'open':'sell', 'close':'buy'}}
         strat = read_some_strat(self.strat_name)
         leverage = strat['leverage']
-        stop_types = {'long':(price - strat['stop_loss'] * price), 'short':(price + strat['stop_loss'] * price)}
+        stop_types = {'long':(price - (strat['stop_loss'] * price)/leverage), 'short':(price + (strat['stop_loss'] * price)/leverage)}
         stop_loss = stop_types[side] if strat['stop_loss'] != 0 else ''
         self.trade.set_leverage(token, leverage)
         deal_result = self.trade.open_pos(token, self.summ(), side, price, side=side_types[side][act_type], ordType=ordType, stop_loss=stop_loss)
