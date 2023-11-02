@@ -20,6 +20,7 @@ with st.form("add_form"):
     strat_type = st.selectbox("Тип стратегии", ARCH_TYPE, help="classic это закрытие сделок при смене тренда, all signal это закрытие сделок по всем сигналам")
     stop_loss = st.number_input("Стоп лосс", help='0.98 это 2% для стоп лосса, если не нужен тогда не надо указывать')
     take_profit = st.number_input("Тейк профит", help='1.02 это 2% для тейк профита, если не нужен тогда не надо указывать')
+    leverage = st.number_input("Левередж", help='Указать кредитное плече')
     balance = st.number_input("Стартовый баланс")
     interval = st.selectbox("Интервал", INTERVALS) 
     token = st.selectbox("Токен", TOKEN_LIST ,help='Пример токена: BTC')
@@ -28,7 +29,7 @@ with st.form("add_form"):
     if st.form_submit_button("Добавить"):
         try:
             db = DealsDataBase(name)
-            add_new_strat(name=name, indicator_list=indicator_list, demo_mode=demo_mode, status='off', arch=arch, strat_type=strat_type, balance=balance, interval=interval, token=token, stop_loss=stop_loss, take_profit=take_profit)
+            add_new_strat(name=name, indicator_list=indicator_list, demo_mode=demo_mode, status='off', arch=arch, strat_type=strat_type, balance=balance, interval=interval, token=token, stop_loss=stop_loss, take_profit=take_profit, leverage=leverage)
             st.success("Стратегия успешно добавлена")
         except Exception:
             st.error("Ошибка при добавлении стратегии")
