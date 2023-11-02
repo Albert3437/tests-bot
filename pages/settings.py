@@ -2,7 +2,7 @@ import streamlit as st
 
 from modules.web_core import WebCore
 from modules.config import api_write, read_config, change_config
-
+from modules.telegram import Telegram
 
 web_core=WebCore()
 
@@ -59,3 +59,5 @@ with col1.form('cfg_form'):
     TASKS = st.text_input('Времена для оповещения', value=str(cfg['TASKS'])[1:-1].replace("'", '')).split(", ")
     if st.form_submit_button('Сохранить'):
         change_config(DEMO_MODE=DEMO_MODE, START_BALANCE=START_BALANCE, TOKEN_LIST=TOKEN_LIST, FEES=FEES, TASKS=TASKS)
+        tele = Telegram()
+        tele.telegram_notification()

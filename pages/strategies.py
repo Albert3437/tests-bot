@@ -70,7 +70,7 @@ if col1.button('Удалить стратегию'):
 
 col2.subheader("Изменение стратегии")
 
-with col2.form("add_form"):
+with col2.form("Найстрока"):
 # НАСТРОИТЬ ОТОБРАЖЕНИЕ ВСЕХ СТАРТОВЫХ ПОЗИЦИЙ
     
     name = st.text_input("Название", value=strat['name'])

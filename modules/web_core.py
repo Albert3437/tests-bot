@@ -17,7 +17,7 @@ class WebCore:
     def __init__(self, strat_name = 'test'):
         # Грубо говоря это бекенд для веб приложения
         self.strat_name = strat_name
-        flag = str(DEMO_MODE)
+        flag = str(read_config()['DEMO_MODE'])
         self.metric = Metrics(strat_name)
         self.deals_db = DealsDataBase(strat_name)
         self.trade = okxTrade(flag)
@@ -28,7 +28,7 @@ class WebCore:
         # Получение полного баланса
         #total_balance = 0
         total_balance = self.metric.total_balance()
-        profit_percent = (total_balance / START_BALANCE - 1) * 100
+        profit_percent = (total_balance / read_config()['START_BALANCE'] - 1) * 100
         return total_balance, round(profit_percent, 2)
 
 
@@ -275,7 +275,7 @@ class WebCore:
     @logging
     def get_active_deals(self):
         active_deals = []
-        for strat_name in STRATS:
+        for strat_name in read_config()['STRATS']:
             try:
                 db = DealsDataBase(strat_name)
                 data = db.read_deals(strat_name)

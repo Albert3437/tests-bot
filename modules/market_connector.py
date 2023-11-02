@@ -12,7 +12,7 @@ from modules.config import *
 
 # У всех функция прописан функционал повторных запросов на сервер при ошибке через бесконечный цикл
 class okxTrade:
-    def __init__(self, flag=DEMO_MODE):
+    def __init__(self, flag=read_config()['DEMO_MODE']):
         # Класс для работы с АПИ биржи ОКХ
         with open('configs/API.json', 'r') as f:
             keys = json.load(f)
@@ -51,7 +51,7 @@ class okxTrade:
 
 
     @logging
-    def open_pos(self, token, amount, posSide, price='', side="buy", ordType='market'):
+    def open_pos(self, token, amount, posSide, price='', side="buy", ordType='market', stop_loss=''):
         # Открытие лонговой сделки по маркет цене
         for _ in range(5):
             try:
@@ -62,6 +62,8 @@ class okxTrade:
                     posSide=posSide,
                     ordType=ordType,
                     px=price,
+                    slTriggerPx=stop_loss,
+                    slOrdPx=stop_loss,
                     sz=amount # 1 == 0.001 BTC , i dont know why it is so
                 )
                 return result

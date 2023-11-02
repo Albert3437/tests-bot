@@ -40,7 +40,6 @@ class Telegram:
         message += f'\n\nСостояние стратегий:'
         for strat_name in STRATS:
             message += f'\n{strat_name}: {"В норме" if web_core.work_status(strat_name) else "Ошибка"}'
-        logger.info(message)
         self.message(message)
             
 
@@ -84,5 +83,3 @@ class Telegram:
         while True:
             schedule.run_pending()
             time.sleep(1)
-
-    

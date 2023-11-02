@@ -15,10 +15,10 @@ from modules.logger import logging, logger
 
 class TradingEngine:
     def __init__(self, strat_name):
-        # Это сердце всей программы: торговое ядро, открывает, отслеживает, закрывает, записывает сделки
+        # Это сердце всей программы - торговое ядро: открывает, отслеживает, закрывает, записывает сделки
         self.strat_name = strat_name
-        strat = read_some_strat(strat_name)
-        self.trade = okxTrade(str(int(strat['demo_mode'])))
+        self.strat = read_some_strat(strat_name)
+        self.trade = okxTrade(int(self.strat['demo_mode']))
         self.deals_db = DealsDataBase(strat_name)
 
 
@@ -26,9 +26,9 @@ class TradingEngine:
     def summ(self):
         # функция которая вычисляет размер ордера, на основе цен контрактов, а так-же весов для разных типов торговых пар
         strat = read_some_strat(self.strat_name)
-        amount, token = strat['balance'], strat['token']
+        amount, token = strat['balance'] * strat["leverage"], strat['token']
         actual_price = self.trade.actual_price(token)
-        amount = amount/actual_price / self.trade.value_coef(token)
+        amount = amount / actual_price / self.trade.value_coef(token)
         logger.info(amount)
         return math.ceil(amount)
 
@@ -46,11 +46,14 @@ class TradingEngine:
     def close_data(self):
         # Функция получения данных по закрытию сделки
         try:
-            r = self.trade.position_list_history()[0]
-            percent = 1 + float(r['pnlRatio'])
-            close_price = float(r['closeAvgPx'])
-            open_price = float(r['openAvgPx'])
-            fee = (float(r['closeTotalPos']) * float(r['closeAvgPx']) * FEES)
+            token = f'{self.strat["token"]}-USDT-SWAP'
+            for deal in self.trade.position_list_history():
+                if deal['instId'] == token:
+                    break
+            percent = 1 + float(deal['pnlRatio'])
+            close_price = float(deal['closeAvgPx'])
+            open_price = float(deal['openAvgPx'])
+            fee = (float(deal['closeTotalPos']) * float(deal['closeAvgPx']) * FEES)
         except:
             percent, close_price, open_price, fee = 0,0,0,0
         return percent, close_price, open_price, fee
@@ -60,10 +63,14 @@ class TradingEngine:
     def place_order(self, token:str, price:float, side:str, act_type:str, ordType:str):
         # Функция прокладка для открытия сделки
         side_types = {'long':{'open':'buy', 'close':'sell'}, 'short':{'open':'sell', 'close':'buy'}}
-        deal_result = self.trade.open_pos(token, self.summ(), side, price, side=side_types[side][act_type], ordType=ordType)
+        strat = read_some_strat(self.strat_name)
+        leverage = strat['leverage']
+        stop_types = {'long':(price - strat['stop_loss'] * price), 'short':(price + strat['stop_loss'] * price)}
+        stop_loss = stop_types[side] if strat['stop_loss'] != 0 else ''
+        self.trade.set_leverage(token, leverage)
+        deal_result = self.trade.open_pos(token, self.summ(), side, price, side=side_types[side][act_type], ordType=ordType, stop_loss=stop_loss)
         logger.info(deal_result)
         return deal_result
-
 
 
     @logging
@@ -130,28 +137,6 @@ class TradingEngine:
             _, _, open_price, _ = self.close_data()
             self.deals_db.open_deal(order_id, timestamp, open_price, side, status)
             return deal_result
-
-
-    @logging
-    def manage_deals(self, token):
-        # НЕ ИСПОЛЬЗУЕТСЯ
-        # Отслеживание сделок и закрытие по стоп лоссу
-        while True:
-            deal = self.deals_db.read_deals()[-1]
-            if deal['close_price'] is None:
-            # Ожидание завершения сделок, а так же отслеживание стопа и тейка, так как в сдк не работают функции стопов и тейков
-                price = float(self.trade.actual_price(token))
-                open_price = deal['open_price']
-                stop_price = open_price * self.settings_db.read_settings()[-1]['stop_loss']
-                pos = deal['deal_type']
-                if pos == 'long':
-                    if price <= stop_price:
-                        self.close_deal(token,'long')
-                if pos == 'short':
-                    if price >= stop_price:
-                        self.close_deal(token,'short')
-            # Нужно для оптимизации и ограничения запросов на сервер, можно изменить значение
-            time.sleep(2)
 
 
 #df = trade_data.get_last_candles()

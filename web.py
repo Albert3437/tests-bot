@@ -35,7 +35,7 @@ col2.subheader('Люгер')
 col2.dataframe(web_core.logger_df())
 
 col1.subheader('Состояние стратегий')
-for strat_name in STRATS:
+for strat_name in read_config()['STRATS']:
     
     col1.subheader(strat_name)
 
